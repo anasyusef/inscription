@@ -1,11 +1,23 @@
 import Head from "next/head"
-import Link from "next/link"
+import axios from "axios"
+import { useQuery } from "react-query"
 
-import { siteConfig } from "@/config/site"
+import { Fees } from "@/types/api"
+import FileUpload from "@/components/file-upload"
 import { Layout } from "@/components/layout"
-import { buttonVariants } from "@/components/ui/button"
+import TransactionSpeed from "@/components/transaction-speed"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function IndexPage() {
+  const { data: fees } = useQuery(
+    "fees",
+    () => axios.get<Fees>("/api/priority-fees"),
+    {
+      refetchInterval: 10000,
+    }
+  )
+
   return (
     <Layout>
       <Head>
@@ -17,34 +29,24 @@ export default function IndexPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="container grid items-center gap-6 pt-6 pb-8 md:py-10">
-        <div className="flex max-w-[980px] flex-col items-start gap-2">
-          <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-            Beautifully designed components <br className="hidden sm:inline" />
-            built with Radix UI and Tailwind CSS.
-          </h1>
-          <p className="max-w-[700px] text-lg text-slate-700 dark:text-slate-400 sm:text-xl">
-            Accessible and customizable components that you can copy and paste
-            into your apps. Free. Open Source. And Next.js 13 Ready.
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <Link
-            href={siteConfig.links.docs}
-            target="_blank"
-            rel="noreferrer"
-            className={buttonVariants({ size: "lg" })}
-          >
-            Documentation
-          </Link>
-          <Link
-            target="_blank"
-            rel="noreferrer"
-            href={siteConfig.links.github}
-            className={buttonVariants({ variant: "outline", size: "lg" })}
-          >
-            GitHub
-          </Link>
+      <section className="container flex flex-col items-center space-y-10 pt-6 md:w-10/12 md:py-10 lg:w-8/12">
+        <FileUpload />
+        <div className="flex flex-col space-y-10 rounded-md bg-slate-100 p-10 drop-shadow-sm dark:bg-slate-800">
+          <div className="flex w-full justify-center space-y-10 ">
+            <div className="w-full space-y-3">
+              <Label htmlFor="btc-address">
+                Ordinal compatible BTC address
+              </Label>
+              <Input
+                type="text"
+                id="btc-address"
+                placeholder="bc1phcspg4ejyze9yfxpmdhgru4ttw7am5l065sgdzrezddzdjcerj3s07203g"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center space-y-10">
+            <TransactionSpeed {...fees?.data} />
+          </div>
         </div>
       </section>
     </Layout>
