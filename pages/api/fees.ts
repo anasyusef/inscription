@@ -21,9 +21,7 @@ export default async function handler(
 
   let parsedSchema: z.infer<typeof schema>
   try {
-    console.log(req.query)
     parsedSchema = schema.parse(req.query)
-    console.log(parsedSchema)
   } catch (e) {
     return res.status(400).json({ message: e.issues })
   }

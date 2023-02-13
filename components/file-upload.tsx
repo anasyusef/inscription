@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react"
 import Image from "next/image"
+import { useStore } from "@/store"
 import { File, Upload } from "lucide-react"
 import { useDropzone } from "react-dropzone"
 
@@ -10,21 +11,22 @@ type Props = {}
 
 const MAX_SIZE = 390 * 1000 // 390kB
 export default function FileUpload({}: Props) {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setSelectedFiles(acceptedFiles)
-    // Do something with the files
-  }, [])
+  const store = useStore()
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      store.setFiles(acceptedFiles)
+      // setSelectedFiles(acceptedFiles)
+      // Do something with the files
+    },
+    [store]
+  )
   const {
     getRootProps,
     getInputProps,
-    isDragActive,
 
-    acceptedFiles,
     fileRejections,
   } = useDropzone({
     onDrop,
-    // validator: sizeValidator,
     multiple: false,
     maxSize: MAX_SIZE,
     accept: {
@@ -39,7 +41,7 @@ export default function FileUpload({}: Props) {
 
   const handleClear = (e: any) => {
     e.stopPropagation()
-    setSelectedFiles([])
+    store.setFiles([])
   }
 
   return (
@@ -56,10 +58,9 @@ export default function FileUpload({}: Props) {
           {...getRootProps()}
           className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-slate-200 text-sm hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-800 "
         >
-          {selectedFiles.length ? (
-            selectedFiles.map((file) => {
+          {store.files.length ? (
+            store.files.map((file, idx) => {
               let component = null
-              console.log(file.type)
               if (file.type.startsWith("image/")) {
                 component = (
                   <Image
@@ -74,6 +75,7 @@ export default function FileUpload({}: Props) {
               }
               return (
                 <div
+                key={idx}
                   onClick={(e) => e.stopPropagation()}
                   className="flex cursor-auto flex-col items-center justify-center space-y-1"
                 >
