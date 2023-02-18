@@ -13,6 +13,7 @@ interface BearState {
   recipientAddress: string
   setRecipientAddress: (v: string) => void
   setPriorityFee: (v: number) => void
+  clear: () => void
 }
 
 export const useStore = create<BearState>()(
@@ -26,6 +27,7 @@ export const useStore = create<BearState>()(
       setFiles: (v) => set(() => ({ files: v })),
       recipientAddress: "",
       setRecipientAddress: (v) => set(() => ({ recipientAddress: v })),
+      clear: () => set(() => ({ recipientAddress: "", files: [] })),
     }),
     {
       name: "main-store",

@@ -67,7 +67,7 @@ export default function FileUpload({}: Props) {
         type="file"
       />
 
-      <div className="h-[200px] w-full space-y-2 sm:h-[300px]">
+      <div className="h-[250px] w-full space-y-2 sm:w-2/3">
         <div
           {...getRootProps()}
           className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-slate-200 text-sm hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-800 "
@@ -79,19 +79,19 @@ export default function FileUpload({}: Props) {
                 component = (
                   <Image
                     alt="preview-image"
-                    height={200}
-                    width={200}
+                    height={150}
+                    width={150}
                     src={URL.createObjectURL(file)}
                   />
                 )
               } else {
-                component = <File className="m-auto h-[200px] w-[100px]" />
+                component = <File className="m-auto h-[150px] w-[100px]" />
               }
               return (
                 <div
                   key={idx}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex cursor-auto flex-col items-center justify-center space-y-1"
+                  className="flex cursor-auto flex-col items-center justify-center space-y-1 overflow-hidden rounded-md bg-slate-500/10"
                 >
                   {component}
                   <div className="flex w-full items-center justify-between space-x-2 rounded-sm bg-slate-200 px-2 py-1 dark:bg-slate-700">
@@ -99,7 +99,12 @@ export default function FileUpload({}: Props) {
                       <p>{file.name}</p>
                       <p>{Math.round((file.size / 1000) * 100) / 100} kB</p>
                     </div>
-                    <Button type="button" onClick={handleClear} size="sm" variant="link">
+                    <Button
+                      type="button"
+                      onClick={handleClear}
+                      size="sm"
+                      variant="link"
+                    >
                       Remove
                     </Button>
                   </div>

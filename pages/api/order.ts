@@ -43,12 +43,15 @@ export default async function handler(
     const { data } = await supabase
       .from("order")
       .select(
-        "id,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address"
+        `id,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address,
+        inscription (commit,inscription,reveal,created_at)
+        `
       )
       .eq("id", orderId)
       .eq("uid", uid)
       .limit(1)
       .single()
+    console.log(data)
     const { data: assetsData } = await supabase.storage
       .from("orders")
       .list(`${uid}/${orderId}`)

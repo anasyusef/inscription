@@ -45,3 +45,15 @@ export function shortenAddress(address: string, chars = 4): string {
 export function parseFileSize(size: number) {
   return `${(size / 1000).toFixed(2).toString()} kB`
 }
+
+export const STATUS = {
+  payment_pending: "Awaiting Payment",
+  payment_received_unconfirmed:
+    "Payment received - Waiting for at least 1 confirmation",
+  payment_received_confirmed: "Payment received",
+  payment_underpaid:
+    "Amount received is less than expected amount, please send the amount remaining",
+  payment_overpaid:
+    "Amount received is greater than expected amount. We'll inscribe the asset received but please get in touch to request a refund of the difference",
+  broadcasted: "Inscription broadcasted",
+} as const

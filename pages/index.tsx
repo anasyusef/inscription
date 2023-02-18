@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react"
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { usePriorityFees } from "@/hooks/usePriorityFees"
 import { useAuthStore, useStore } from "@/store"
 import axios from "axios"
@@ -52,11 +53,10 @@ function RecipientInput() {
 
 export default function IndexPage() {
   const store = useStore()
+  const router = useRouter()
   const authStore = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [orderId, setOrderId] = useState("")
-  const [open, setOpen] = useState(false)
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setError("")
     e.preventDefault()
@@ -90,8 +90,8 @@ export default function IndexPage() {
       )
 
       await Promise.all(uploadPromises)
-      setOrderId(data.orderId)
-      setOpen(true)
+      store.clear()
+      router.push(`/orders/${data.orderId}`)
     } catch (e) {
       const msg = e.response.data.message
       if (typeof msg === "string") {
@@ -109,13 +109,13 @@ export default function IndexPage() {
   return (
     <Layout>
       <Head>
-        <title>Next.js</title>
+        <title>Inscribit</title>
         <meta
           name="description"
           content="Next.js template for building apps with Radix UI and Tailwind CSS"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <form onSubmit={handleSubmit}>
         <section className="container flex flex-col items-center space-y-10 pt-6 md:w-10/12 md:py-10 lg:w-8/12">
@@ -124,11 +124,13 @@ export default function IndexPage() {
             <div className="flex w-full justify-center">
               <RecipientInput />
             </div>
-            <div className="flex flex-col items-center justify-center">
-              <div className="flex flex-col items-center">
-                <TransactionSpeed />
+            {!!store.files.length && (
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center">
+                  <TransactionSpeed />
+                </div>
               </div>
-            </div>
+            )}
             <div className="mx-auto space-y-2">
               <TxCost />
             </div>
@@ -147,11 +149,6 @@ export default function IndexPage() {
             </div>
           </div>
         </section>
-        <PaymentDialog
-          open={open}
-          onOpenChange={(open) => setOpen(open)}
-          orderId={orderId}
-        />
       </form>
     </Layout>
   )
