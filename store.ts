@@ -1,5 +1,6 @@
+import { v4 as uuidv4 } from "uuid"
 import { create } from "zustand"
-import { devtools } from "zustand/middleware"
+import { devtools, persist } from "zustand/middleware"
 
 import { SelectedTxSpeed } from "./types"
 
@@ -29,5 +30,22 @@ export const useStore = create<BearState>()(
     {
       name: "main-store",
     }
+  )
+)
+
+interface AuthState {
+  uid: string
+  generateUid: () => void
+}
+
+export const useAuthStore = create<AuthState>()(
+  devtools(
+    persist(
+      (set) => ({
+        uid: uuidv4(),
+        generateUid: () => set(() => ({ uid: uuidv4() })),
+      }),
+      { name: "auth-storage" }
+    )
   )
 )

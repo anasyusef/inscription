@@ -30,12 +30,26 @@ export default function FileUpload({}: Props) {
     multiple: false,
     maxSize: MAX_SIZE,
     accept: {
-      "image/png": [],
-      "image/jpeg": [],
-      "image/jpg": [],
-      "image/svg+xml": [],
-      "text/html": [],
-      "application/pdf": [],
+      "application/json": [".json"],
+      "application/pdf": [".pdf"],
+      "application/pgp-signature": [".asc"],
+      "application/yaml": [".yaml", ".yml"],
+      "audio/flac": [".flac"],
+      "audio/mpeg": [".mp3"],
+      "audio/wav": [".wav"],
+      "image/apng": [".apng"],
+      "image/avif": [".avif"],
+      "image/gif": [".gif"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/svg+xml": [".svg"],
+      "image/webp": [".webp"],
+      "model/gltf-binary": [".glb"],
+      "model/stl": [".stl"],
+      "text/html;charset=utf-8": [".html"],
+      "text/plain;charset=utf-8": [".txt"],
+      "video/mp4": [".mp4"],
+      "video/webm": [".webm"],
     },
   })
 
@@ -75,7 +89,7 @@ export default function FileUpload({}: Props) {
               }
               return (
                 <div
-                key={idx}
+                  key={idx}
                   onClick={(e) => e.stopPropagation()}
                   className="flex cursor-auto flex-col items-center justify-center space-y-1"
                 >
@@ -85,7 +99,7 @@ export default function FileUpload({}: Props) {
                       <p>{file.name}</p>
                       <p>{Math.round((file.size / 1000) * 100) / 100} kB</p>
                     </div>
-                    <Button onClick={handleClear} size="sm" variant="link">
+                    <Button type="button" onClick={handleClear} size="sm" variant="link">
                       Remove
                     </Button>
                   </div>

@@ -9,6 +9,16 @@ const nextConfig = {
       },
     ],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cowqtapcweplnajtasry.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 }
 
 export default nextConfig

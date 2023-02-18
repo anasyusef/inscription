@@ -1,14 +1,19 @@
 import { FormEvent, useState } from "react"
 import Head from "next/head"
 import { usePriorityFees } from "@/hooks/usePriorityFees"
-import { useStore } from "@/store"
+import { useAuthStore, useStore } from "@/store"
 import axios from "axios"
 import { Network, getAddressInfo } from "bitcoin-address-validation"
 import clsx from "clsx"
+import { Loader2 } from "lucide-react"
+import { v4 as uuidv4 } from "uuid"
 
-import { Fees } from "@/types/api"
+import { Fees, PostOrder } from "@/types/api"
+import { supabase } from "@/lib/supabaseClient"
+import { isValidTaprootAddress, uuidv4Regex } from "@/lib/utils"
 import FileUpload from "@/components/file-upload"
 import { Layout } from "@/components/layout"
+import { PaymentDialog } from "@/components/payment-dialog"
 import TransactionSpeed from "@/components/transaction-speed"
 import { TxCost } from "@/components/tx-cost"
 import { Button } from "@/components/ui/button"
@@ -20,17 +25,12 @@ function RecipientInput() {
   const [error, setError] = useState("")
   const [value, setValue] = useState("")
   const handleBlur = () => {
-    try {
-      const { network, type, bech32 } = getAddressInfo(value)
-      if (network !== "mainnet" || type !== "p2tr" || !bech32) {
-        setError("Address is not an ordinal-compatible address")
-      } else {
-        setError("")
-        store.setRecipientAddress(value)
-      }
-      console.log(type)
-    } catch (e) {
-      setError(e.message)
+    const isValidAddress = isValidTaprootAddress(value)
+    if (!isValidAddress) {
+      setError("Address is not an ordinal-compatible address")
+    } else {
+      setError("")
+      store.setRecipientAddress(value)
     }
   }
   return (
@@ -52,9 +52,60 @@ function RecipientInput() {
 
 export default function IndexPage() {
   const store = useStore()
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const authStore = useAuthStore()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [orderId, setOrderId] = useState("")
+  const [open, setOpen] = useState(false)
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setError("")
     e.preventDefault()
+    const { priorityFee, recipientAddress, txSpeed, files } = store
+    try {
+      setLoading(true)
+      const { data } = await axios.post<PostOrder>("/api/order", {
+        priorityFee,
+        recipientAddress,
+        txSpeed,
+        uid: authStore.uid,
+        combinedFileSizes: files
+          .map((file) => file.size)
+          .reduce((a, b) => a + b, 0),
+      })
+
+      const arrayBuffers = await Promise.all(
+        files.map((item) => item.arrayBuffer())
+      )
+
+      const uploadPromises = files.map((item, idx) =>
+        supabase.storage
+          .from("orders")
+          .upload(
+            `${data.uid}/${data.orderId}/${uuidv4()}`,
+            arrayBuffers[idx],
+            {
+              contentType: item.type,
+            }
+          )
+      )
+
+      await Promise.all(uploadPromises)
+      setOrderId(data.orderId)
+      setOpen(true)
+    } catch (e) {
+      const msg = e.response.data.message
+      if (typeof msg === "string") {
+        setError(e.response.data.message)
+      } else {
+        console.log(e)
+        setError("Something went wrong")
+      }
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const isFormValid = !!store.files.length && !!store.recipientAddress
   return (
     <Layout>
       <Head>
@@ -81,15 +132,26 @@ export default function IndexPage() {
             <div className="mx-auto space-y-2">
               <TxCost />
             </div>
-            <Button
-              type="submit"
-              onClick={() => console.log("Aloo")}
-              variant="default"
-            >
-              Submit
-            </Button>
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <Button
+                className="w-full md:w-1/2"
+                type="submit"
+                variant="default"
+                disabled={!isFormValid || loading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Submit & Pay
+              </Button>
+
+              {error && <p className="text-red-500">{error}</p>}
+            </div>
           </div>
         </section>
+        <PaymentDialog
+          open={open}
+          onOpenChange={(open) => setOpen(open)}
+          orderId={orderId}
+        />
       </form>
     </Layout>
   )

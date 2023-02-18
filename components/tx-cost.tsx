@@ -1,26 +1,15 @@
 import { useStore } from "@/store"
-import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { calculateFees } from "@/lib/utils"
 
-const calculateFees = (fileSize: number, priorityFee: number) => {
-  const baseFee = 0.00025 * 100_000_000
-  const pctFee = 0.1
-  const segwitFileSize = fileSize / 4
-  const networkFees = segwitFileSize * priorityFee
-  const serviceFees = networkFees * pctFee + baseFee
 
-  return {
-    networkFees: Math.floor(networkFees),
-    serviceFees: Math.floor(serviceFees),
-    totalFees: Math.floor(networkFees + serviceFees),
-  }
-}
 
 function PriceData({
   isLoading,
@@ -51,15 +40,19 @@ export const TxCost = () => {
     { cacheTime: 30 * 1_000, staleTime: 30 * 1_000 }
   )
 
+  const handleClick = (e: any) => {
+    e.preventDefault()
+  }
+
   if (!store.files.length) return null
   const fees = calculateFees(store.files[0].size, store.priorityFee)
   return (
     <>
       <div className="grid grid-cols-3 grid-rows-2 items-center gap-x-4 gap-y-0 text-right">
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger onClick={handleClick}>
             <p className="text-md cursor-default text-gray-500 underline underline-offset-4">
-              Chain fee
+              Network fee
             </p>
           </TooltipTrigger>
           <TooltipContent>
@@ -76,7 +69,7 @@ export const TxCost = () => {
         />
 
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger onClick={handleClick}>
             <p className="text-md cursor-default text-gray-500 underline underline-offset-4">
               Service fee
             </p>

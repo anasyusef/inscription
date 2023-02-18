@@ -94,6 +94,7 @@ export default function TransactionSpeed() {
     if (error) {
       setError(error)
     } else {
+      store.setPriorityFee(+value)
       setError("")
     }
   }
@@ -105,6 +106,7 @@ export default function TransactionSpeed() {
     if (data) {
       if (value === "custom") {
         setInputValue(data.data.fast.toString())
+        previousValueRef.current = data.data.fast.toString()
         store.setPriorityFee(data.data.fast)
       } else {
         store.setPriorityFee(getPriorityFeeFromValue(data.data)[value])
@@ -125,18 +127,22 @@ export default function TransactionSpeed() {
     setInputFocus(false)
   }
 
-  if (!store.files.length) return null
+  const isDisabled = !store.files.length
 
   return (
     <>
       <div className="flex w-full flex-col space-y-3">
         <Label htmlFor="transaction-speed">Transaction fee</Label>
         <RadioGroup.Root
+          disabled={isDisabled}
           id="transaction-speed"
           onValueChange={handleValueChange}
           value={store.priorityFee.toString()}
           orientation="horizontal"
-          className="focus:outline-none"
+          className={clsx({
+            "focus:outline-none": true,
+            "opacity-50": isDisabled,
+          })}
           defaultValue="normal"
         >
           <div className="grid items-center justify-center gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 ">
@@ -145,6 +151,7 @@ export default function TransactionSpeed() {
               value="slow"
               satsPerVb={data?.data?.slow}
               timeEstimate="~1 hour"
+              disabled={isDisabled}
               selected={store.txSpeed === "slow"}
             />
             <TransactionSpeedItem
@@ -152,6 +159,7 @@ export default function TransactionSpeed() {
               satsPerVb={data?.data?.medium}
               value="normal"
               timeEstimate="~30 minutes"
+              disabled={isDisabled}
               selected={store.txSpeed === "normal"}
             />
             <TransactionSpeedItem
@@ -159,11 +167,13 @@ export default function TransactionSpeed() {
               name="Fast 💨"
               value="fast"
               timeEstimate="~15 minutes"
+              disabled={isDisabled}
               selected={store.txSpeed === "fast"}
             />
             <TransactionSpeedItem
               name="Custom ⚙️"
               value="custom"
+              disabled={isDisabled}
               selected={store.txSpeed === "custom"}
             />
           </div>
@@ -217,6 +227,7 @@ interface TransactionSpeedProps {
   timeEstimate?: string
   selected: boolean
   satsPerVb?: number
+  disabled?: boolean
 }
 
 const TransactionSpeedItem = ({
@@ -225,6 +236,7 @@ const TransactionSpeedItem = ({
   value,
   satsPerVb,
   timeEstimate,
+  disabled
 }: TransactionSpeedProps) => {
   const shouldShowDetails = value !== "custom"
   return (
@@ -233,7 +245,7 @@ const TransactionSpeedItem = ({
         "flex w-40 h-full flex-col items-center justify-between rounded-md border p-4 focus:outline-none dark:border-slate-700":
           true,
         "dark:bg-slate-700 bg-opacity-10 bg-slate-800 border-slate-300":
-          selected,
+          selected && !disabled,
       })}
       value={value}
       id="r1"
