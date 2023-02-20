@@ -10,7 +10,7 @@ import { Clipboard, File, Loader2 } from "lucide-react"
 import QRCode from "react-qr-code"
 
 import { GetOrder } from "@/types/api"
-import { STATUS, parseFileSize, shortenAddress } from "@/lib/utils"
+import { STATUS, parseDate, parseFileSize, shortenAddress } from "@/lib/utils"
 import { Layout } from "@/components/layout"
 import {
   Accordion,
@@ -74,6 +74,12 @@ export default function OrderPage() {
           </div>
           <div className="border-b border-black/10 pb-4 dark:border-white/10">
             <div className="mt-4 flex justify-between gap-2">
+              <p className="mb-3 text-sm">Created at</p>
+              <p className="mb-3 text-right text-xs xl:text-sm">
+                {parseDate(data.data.created_at)}
+              </p>
+            </div>
+            <div className="flex justify-between gap-2">
               <p className="mb-3 text-sm">Recipient address</p>
               <p className="mb-3 text-right text-xs xl:text-sm">
                 {shortenAddress(data.data.recipient_address, 10)}

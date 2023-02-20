@@ -2,14 +2,14 @@ import { useStore } from "@/store"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 
+import { calculateFees } from "@/lib/utils"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { calculateFees } from "@/lib/utils"
-
-
+import { Button } from "./ui/button"
+import { HelpCircle } from "lucide-react"
 
 function PriceData({
   isLoading,
@@ -48,7 +48,21 @@ export const TxCost = () => {
   const fees = calculateFees(store.files[0].size, store.priorityFee)
   return (
     <>
+    <div className="grid z-8 relative">
+          <Tooltip>
+            <TooltipTrigger>
+              <span tabIndex={0}>
+                <button disabled style={{ pointerEvents: "none" }}>
+                  {/* <Info className="h-4 w-4" /> */}
+                  adasd
+                </button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent><p>Add to library</p></TooltipContent>
+          </Tooltip>
+        </div>
       <div className="grid grid-cols-3 grid-rows-2 items-center gap-x-4 gap-y-0 text-right">
+
         <Tooltip>
           <TooltipTrigger onClick={handleClick}>
             <p className="text-md cursor-default text-gray-500 underline underline-offset-4">
@@ -98,6 +112,7 @@ export const TxCost = () => {
           rate={data?.data.price}
           value={fees.totalFees}
         />
+
       </div>
     </>
   )

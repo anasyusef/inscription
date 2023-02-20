@@ -114,14 +114,13 @@ export default function FileUpload({}: Props) {
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2 text-center">
               <Upload className="h-12 w-12" />
-
               <p className="text-lg font-extrabold">
                 Drop file, or click to select file
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-100">
-                We accept files in the following formats: PNG, JPEG, JPG, PDF,
-                HTML, and SVG
+                We accept files in the following formats:
               </p>
+              <p className="w-1/2">jpg/jpeg, png/apng, gif, pdf, asc, yaml/yml, wav, avif, svg, webp, glb, stl, html, txt, mp4, json, flac and webm</p>
               <p className="text-sm text-gray-700 dark:text-gray-100">
                 Max file size: <b>390 KB</b>
               </p>
