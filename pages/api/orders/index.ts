@@ -19,7 +19,6 @@ const postSchema = z
   .required()
 
 const getSchema = z.object({
-  orderId: z.string().regex(uuidv4Regex),
   uid: z.string().regex(uuidv4Regex),
 })
 
@@ -38,30 +37,38 @@ export default async function handler(
     } catch (e) {
       return res.status(400).json({ message: e.issues })
     }
-    const { orderId, uid } = parsedSchema
+    const { uid } = parsedSchema
 
     const { data } = await supabase
       .from("order")
       .select(
-        `id,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address,
-        inscription (commit,inscription,reveal,created_at)
-        `
+        `id,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address,created_at`
       )
-      .eq("id", orderId)
       .eq("uid", uid)
-      .limit(1)
-      .single()
-    console.log(data)
-    const { data: assetsData } = await supabase.storage
-      .from("orders")
-      .list(`${uid}/${orderId}`)
-    const assets = assetsData.map((asset) => ({
-      url: supabase.storage
-        .from("orders")
-        .getPublicUrl(`${uid}/${orderId}/${asset.name}`).data.publicUrl,
-      size: asset.metadata.size,
+      .order("created_at", { ascending: false })
+
+    const orderIds = data.map((item) => item.id)
+    const listAssetsPromises = orderIds.map((orderId) => ({
+      assets: supabase.storage.from("orders").list(`${uid}/${orderId}`),
+      orderId,
     }))
-    return res.json({ ...data, assets })
+    const assets = {}
+    for (const item of listAssetsPromises) {
+      const { data } = await item.assets
+      assets[item.orderId] = data
+    }
+    data.forEach((orderItem) => {
+      const orderIdAssets = assets[orderItem.id]
+      ;(orderItem as any).assets = orderIdAssets.map((item) => ({
+        size: item.metadata.size,
+        mimeType: item.metadata.mimetype,
+        url: supabase.storage
+          .from("orders")
+          .getPublicUrl(`${uid}/${orderItem.id}/${item.name}`).data.publicUrl,
+      }))
+    })
+
+    return res.json({ orders: data })
   }
 
   let parsedSchema: z.infer<typeof postSchema>

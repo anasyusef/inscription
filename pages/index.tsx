@@ -63,7 +63,7 @@ export default function IndexPage() {
     const { priorityFee, recipientAddress, txSpeed, files } = store
     try {
       setLoading(true)
-      const { data } = await axios.post<PostOrder>("/api/order", {
+      const { data } = await axios.post<PostOrder>(`/api/orders`, {
         priorityFee,
         recipientAddress,
         txSpeed,
@@ -112,26 +112,35 @@ export default function IndexPage() {
         <title>Inscribit</title>
         <meta
           name="description"
-          content="Next.js template for building apps with Radix UI and Tailwind CSS"
+          content="Inscribe content onto the Bitcoin Blockchain"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
-      <form onSubmit={handleSubmit}>
-        <section className="container flex flex-col items-center space-y-10 pt-6 md:w-10/12 md:py-10 lg:w-8/12">
+      <section>
+        <div>
+          <h1 className="mt-10 text-center text-3xl font-black leading-tight tracking-tighter sm:text-3xl lg:text-4xl">
+            Inscribe content onto the Bitcoin Blockchain
+          </h1>
+          <h2 className="text-center text-xl text-gray-300">Inscriptions made easy, for a lasting legacy</h2>
+        </div>
+        <form
+          className="container flex flex-col items-center space-y-10 pt-6 md:w-10/12 md:py-10 lg:w-8/12"
+          onSubmit={handleSubmit}
+        >
           <FileUpload />
-          <div className="flex flex-col space-y-10 rounded-md border border-black/5 bg-slate-100 p-10 dark:border-white/5 dark:bg-slate-800 sm:w-2/3">
+          <div className="flex flex-col space-y-5 rounded-md border border-black/5 bg-slate-100 p-10 dark:border-white/5 dark:bg-slate-800 sm:w-2/3">
             <div className="flex w-full justify-center">
               <RecipientInput />
             </div>
             {!!store.files.length && (
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center py-5">
                 <div className="flex flex-col items-center">
                   <TransactionSpeed />
                 </div>
               </div>
             )}
-            <div className="mx-auto space-y-2">
+            <div className="mx-auto space-y-2 pb-5">
               <TxCost />
             </div>
             <div className="flex flex-col items-center justify-center space-y-2">
@@ -148,8 +157,8 @@ export default function IndexPage() {
               {error && <p className="text-red-500">{error}</p>}
             </div>
           </div>
-        </section>
-      </form>
+        </form>
+      </section>
     </Layout>
   )
 }

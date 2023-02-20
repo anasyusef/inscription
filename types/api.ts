@@ -27,10 +27,25 @@ export type GetOrder = {
   status: string
   assigned_taproot_address: string
   priority_fee: number
-  assets: Asset[]
+  assets?: Asset[]
+  created_at?: string
+  inscription: Inscription[]
+}
+
+export type Inscription = {
+  commit: string
+  inscription: string
+  reveal: string
+  send_tx: string
+  created_at: Date
 }
 
 export type Asset = {
   size: number
   url: string
+  mimeType: string
+}
+
+export type GetOrders = {
+  orders: GetOrder[]
 }
