@@ -1,6 +1,6 @@
 export type Fees = {
   slow: number
-  medium: number
+  normal: number
   fast: number
 }
 

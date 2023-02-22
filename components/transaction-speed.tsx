@@ -57,7 +57,6 @@ export default function TransactionSpeed() {
   const previousValueRef = useRef(inputValue)
   const [error, setError] = useState("")
   // Workaround to only one fetch
-  const [fetchedOnce, setFetchedOnce] = useState(false)
   // const [selectedTxSpeed, setSelectedTxSpeed] =
   //   useState<SelectedTxSpeed>("normal")
 
@@ -79,9 +78,8 @@ export default function TransactionSpeed() {
   }
 
   useEffect(() => {
-    if (data?.data && !fetchedOnce) {
-      store.setPriorityFee(data.data.medium)
-      setFetchedOnce(true)
+    if (data?.data && store.txSpeed !== "custom") {
+      store.setPriorityFee(data.data[store.txSpeed])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
@@ -156,7 +154,7 @@ export default function TransactionSpeed() {
             />
             <TransactionSpeedItem
               name="Normal 🐎"
-              satsPerVb={data?.data?.medium}
+              satsPerVb={data?.data?.normal}
               value="normal"
               timeEstimate="~30 minutes"
               disabled={isDisabled}

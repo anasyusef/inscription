@@ -174,7 +174,7 @@ export default function IndexPage() {
         >
           <FileUpload />
 
-          <div className="flex flex-col space-y-5 rounded-md border border-black/5 bg-slate-100 p-10 dark:border-white/5 dark:bg-gray-900 sm:w-2/3">
+          <div className="flex flex-col space-y-5 rounded-md border border-black/5 bg-gray-50 p-10 dark:border-white/5 dark:bg-gray-900 sm:w-2/3">
             <div className="flex w-full justify-center">
               <RecipientInput />
             </div>

@@ -15,5 +15,5 @@ export default async function handler(
 
   const { halfHourFee, fastestFee, hourFee } = feesRecommended
 
-  res.status(200).json({ slow: hourFee, medium: halfHourFee, fast: fastestFee })
+  res.status(200).json({ slow: hourFee, normal: halfHourFee, fast: fastestFee })
 }

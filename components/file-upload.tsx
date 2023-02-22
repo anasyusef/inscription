@@ -91,9 +91,9 @@ export default function FileUpload({}: Props) {
                 <div
                   key={idx}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex cursor-auto flex-col items-center justify-center space-y-1 overflow-hidden rounded-md bg-slate-500/10"
+                  className="flex cursor-auto flex-col items-center justify-center space-y-1 overflow-hidden rounded-md bg-slate-500/10 p-0"
                 >
-                  {component}
+                  <div className="p-2">{component}</div>
                   <div className="flex w-full items-center justify-between space-x-2 rounded-sm bg-slate-200 px-2 py-1 dark:bg-slate-700">
                     <div className="space-y-1">
                       <p>{file.name}</p>
@@ -120,7 +120,10 @@ export default function FileUpload({}: Props) {
               <p className="text-sm text-gray-700 dark:text-gray-100">
                 We accept files in the following formats:
               </p>
-              <p className="w-1/2">jpg/jpeg, png/apng, gif, pdf, asc, yaml/yml, wav, avif, svg, webp, glb, stl, html, txt, mp4, json, flac and webm</p>
+              <p className="w-1/2">
+                jpg/jpeg, png/apng, gif, pdf, asc, yaml/yml, wav, avif, svg,
+                webp, glb, stl, html, txt, mp4, json, flac and webm
+              </p>
               <p className="text-sm text-gray-700 dark:text-gray-100">
                 Max file size: <b>390 KB</b>
               </p>
