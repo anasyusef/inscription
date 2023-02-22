@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const estimateTxSpeed = ({ slow, medium, fast }: Fees) => ({
+const estimateTxSpeed = ({ slow, normal, fast }: Fees) => ({
   [slow]: "~1 hour",
-  [medium]: "~30 minutes",
+  [normal]: "~30 minutes",
   [fast]: "~15 minutes",
 })
 
@@ -20,27 +20,21 @@ function isNumeric(value: string) {
   return /^-?\d+$/.test(value)
 }
 
-const getPriorityFeeFromValue = ({ slow, medium, fast }: Fees) => ({
-  slow,
-  normal: medium,
-  fast,
-})
-
 const getEstimateTime = (value: number, fees: Fees) => {
   let estimate = estimateTxSpeed(fees)[value]
-  const { slow, medium, fast } = fees
+  const { slow, normal, fast } = fees
   if (estimate) return estimate
 
   if (value < slow) {
     return ">1 hour"
   }
 
-  if (value > slow && value < medium) {
+  if (value > slow && value < normal) {
     return estimateTxSpeed(fees)[slow]
   }
 
-  if (value > medium && value < fast) {
-    return estimateTxSpeed(fees)[medium]
+  if (value > normal && value < fast) {
+    return estimateTxSpeed(fees)[normal]
   }
 
   if (value > fast) {
@@ -107,7 +101,7 @@ export default function TransactionSpeed() {
         previousValueRef.current = data.data.fast.toString()
         store.setPriorityFee(data.data.fast)
       } else {
-        store.setPriorityFee(getPriorityFeeFromValue(data.data)[value])
+        store.setPriorityFee(data.data[value])
       }
     }
   }

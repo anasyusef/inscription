@@ -54,8 +54,8 @@ function RecipientInput() {
           <TooltipContent className="max-w-xs">
             <p>
               An ordinal compatible address is a Taproot address that starts
-              with {"'bc1p'"}. If {"you're"} not sure whether your Bitcoin address is
-              ordinal compatible, check out{" "}
+              with {"'bc1p'"}. If {"you're"} not sure whether your Bitcoin
+              address is ordinal compatible, check out{" "}
               <Link
                 target="_blank"
                 href="https://gist.github.com/windsok/5b53a1ced6ef3eddbde260337de28980"
@@ -159,7 +159,7 @@ export default function IndexPage() {
           <h1 className="mt-10 text-center text-3xl font-black leading-tight tracking-tighter sm:text-3xl lg:text-4xl">
             Inscribe content onto the Bitcoin Blockchain
           </h1>
-          <h2 className="text-center text-xl text-gray-500 dark:text-gray-300">
+          <h2 className="text-center text-xl tracking-tight text-gray-500 dark:text-gray-300">
             Inscriptions made easy, for a lasting legacy
           </h2>
           <div className="mt-4 flex w-full items-center justify-center">
