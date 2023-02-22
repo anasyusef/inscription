@@ -25,7 +25,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             Bitcoin blockchain by following these simple steps
           </DialogDescription>
           <div className=" space-y-3 text-sm">
-            <ol className="list-decimal space-y-3 list-outside p-4">
+            <ol className="list-outside list-decimal space-y-3 p-4">
               <li>
                 <p>
                   <span className="font-bold">Upload your file:</span> Choose a
@@ -70,7 +70,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               <li>
                 <p>
                   <span className="font-bold">Send payment:</span> Once{" "}
-                  {"you've"}
+                  {"you've "}
                   uploaded your file, entered your address, and selected your
                   transaction speed, {"you'll"} need to send the payable amount
                   to the assigned bitcoin address.

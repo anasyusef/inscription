@@ -243,7 +243,7 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
             it reaches 1-2 confirmations by the network
           </p>
         ) : (
-          <div className="w-full justify-end flex">
+          <div className="flex w-full justify-end">
             <Link
               target="_blank"
               href={`https://ordinals.com/inscription/${inscription.inscription}`}
@@ -264,7 +264,7 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
               <Link
                 target="_blank"
                 href={`https://mempool.space/tx/${inscription.commit}`}
-                className="underline col-span-5 text-right uppercase"
+                className="col-span-5 text-right uppercase underline"
               >
                 {inscription.commit}
               </Link>
@@ -350,7 +350,7 @@ function PaymentInstructions({
           value={`bitcoin:${assignedBtcAddress}`}
           className="h-auto rounded-md bg-white p-6"
         />
-        <div className="flex w-full space-x-2 items-center">
+        <div className="flex w-full items-center space-x-2">
           <Input value={assignedBtcAddress} readOnly />
           <Button
             size="sm"

@@ -70,7 +70,7 @@ export default function FileUpload({}: Props) {
       <div className="h-[250px] w-full space-y-2 sm:w-2/3">
         <div
           {...getRootProps()}
-          className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-slate-200 text-sm hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-800 "
+          className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-slate-200 text-sm hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-800"
         >
           {store.files.length ? (
             store.files.map((file, idx) => {
@@ -113,17 +113,17 @@ export default function FileUpload({}: Props) {
             })
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2 text-center">
-              <Upload className="h-12 w-12" />
-              <p className="text-lg font-extrabold">
-                Drop file, or click to select file
+              <Upload className="mb-2 h-8 w-8" />
+              <p className="text-md font-extrabold">
+                Drop files, or click to select files
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-100">
+              {/* <p className="text-sm text-gray-700 dark:text-gray-100">
                 We accept files in the following formats:
-              </p>
-              <p className="w-1/2">
+              </p> */}
+              {/* <p className="w-1/2">
                 jpg/jpeg, png/apng, gif, pdf, asc, yaml/yml, wav, avif, svg,
                 webp, glb, stl, html, txt, mp4, json, flac and webm
-              </p>
+              </p> */}
               <p className="text-sm text-gray-700 dark:text-gray-100">
                 Max file size: <b>390 KB</b>
               </p>

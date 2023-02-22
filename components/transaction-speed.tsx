@@ -9,6 +9,17 @@ import { Fees } from "@/types/api"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from "./ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 
 const estimateTxSpeed = ({ slow, normal, fast }: Fees) => ({
   [slow]: "~1 hour",
@@ -119,12 +130,53 @@ export default function TransactionSpeed() {
     setInputFocus(false)
   }
 
+  const label: Record<SelectedTxSpeed, string> = {
+    slow: "Slow 🐌",
+    normal: "Normal 🐎",
+    fast: "Fast 💨",
+    custom: "Custom ⚙️",
+  }
+
   const isDisabled = !store.files.length
 
   return (
     <>
       <div className="flex w-full flex-col space-y-3">
         <Label htmlFor="transaction-speed">Transaction fee</Label>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="block md:hidden" asChild>
+            <Button variant="outline">{label[store.txSpeed]}</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex- flex w-[200px] justify-between">
+            <DropdownMenuRadioGroup
+              className="w-full"
+              onValueChange={handleValueChange}
+              value={store.txSpeed}
+            >
+              <DropdownMenuRadioItem className="justify-between" value="slow">
+                <span>Slow 🐌</span>{" "}
+                <span className="text-gray-500 dark:text-gray-400">
+                  ~1 hour
+                </span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className="justify-between" value="normal">
+                <span>Normal 🐎</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  ~30 mins
+                </span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className="justify-between" value="fast">
+                <span>Fast 💨</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  ~15 mins
+                </span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="custom">
+                Custom ⚙️
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <RadioGroup.Root
           disabled={isDisabled}
           id="transaction-speed"
@@ -134,6 +186,8 @@ export default function TransactionSpeed() {
           className={clsx({
             "focus:outline-none": true,
             "opacity-50": isDisabled,
+            hidden: true,
+            "md:block": true,
           })}
           defaultValue="normal"
         >
@@ -228,7 +282,7 @@ const TransactionSpeedItem = ({
   value,
   satsPerVb,
   timeEstimate,
-  disabled
+  disabled,
 }: TransactionSpeedProps) => {
   const shouldShowDetails = value !== "custom"
   return (
