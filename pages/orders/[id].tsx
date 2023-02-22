@@ -134,7 +134,7 @@ export default function OrderPage() {
           </h2>
           <div className="flex overflow-hidden rounded-md border border-black/5 bg-slate-100 dark:border-white/5 dark:bg-slate-800 ">
             <div className="border-r-1 flex w-full flex-col p-8 lg:w-7/12">
-              <Accordion className="lg:hidden" type="single" collapsible>
+              <Accordion className="mb-2 lg:hidden" type="single" collapsible>
                 <AccordionItem value="order-summary">
                   <AccordionTrigger>Show order summary</AccordionTrigger>
                   <AccordionContent>{OrderSummary}</AccordionContent>
@@ -220,9 +220,9 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
   return (
     <>
       <div className="space-y-2">
-        <div className="grid grid-cols-5 items-center">
-          <p>Inscription ID</p>{" "}
-          <div className="col-span-4 flex items-center space-x-2">
+        <div className="flex w-full items-center justify-between space-x-4">
+          <p className="min-w-fit">Inscription ID</p>{" "}
+          <div className="flex w-full items-center space-x-2">
             <Input
               className="w-full"
               readOnly
