@@ -252,7 +252,7 @@ export default function TransactionSpeed() {
             {error && <Label className="text-red-500">{error}</Label>}
             <div>
               {isFetched && !error && (
-                <p className="text-center">
+                <p className="text-center text-sm md:text-base">
                   Estimated time:{" "}
                   <span className="font-semibold">
                     {getEstimateTime(+inputValue, data.data)}
