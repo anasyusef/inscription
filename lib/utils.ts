@@ -27,7 +27,7 @@ export const isValidTaprootAddress = (address: string) => {
     const { network, type, bech32 } = getAddressInfo(address)
     // TODO - Change back to check mainnet address
     if (network !== "mainnet" || type !== "p2tr" || !bech32) {
-    // if (type !== "p2tr" || !bech32) {
+      // if (type !== "p2tr" || !bech32) {
       return false
     }
     return true
@@ -44,7 +44,10 @@ export function shortenAddress(address: string, chars = 4): string {
 }
 
 export function parseFileSize(size: number) {
-  return `${(size / 1000).toFixed(2).toString()} kB`
+  if (size < 1000) {
+    return `${size} bytes`
+  }
+  return `${Math.round((size / 1000) * 100) / 100} kB`
 }
 
 export const STATUS = {

@@ -142,7 +142,13 @@ export default function TransactionSpeed() {
   return (
     <>
       <div className="flex w-full flex-col space-y-3">
-        <Label htmlFor="transaction-speed">Transaction fee</Label>
+        <div>
+          <Label htmlFor="transaction-speed">Transaction fee</Label>
+          <p className="text-sm text-gray-700 dark:text-gray-400">
+            Choose how quickly you want your inscription to be processed. Faster
+            transactions cost more.
+          </p>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger className="block md:hidden" asChild>
             <Button variant="outline">{label[store.txSpeed]}</Button>

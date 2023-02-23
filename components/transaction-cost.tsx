@@ -70,7 +70,7 @@ export const TransactionCost = () => {
             <GridTitle>Network fee</GridTitle>
           </TooltipTrigger>
           <TooltipContent>
-            <p>It&apos;s calculated based on the size of the file</p>
+            <p>This is the fee that the Bitcoin network takes. It&apos;s calculated based on the size of the file</p>
           </TooltipContent>
         </Tooltip>
         <GridContent>
@@ -87,7 +87,7 @@ export const TransactionCost = () => {
             <GridTitle>Service fee</GridTitle>
           </TooltipTrigger>
           <TooltipContent className="pointer-events-none">
-            <p>10% + 0.00025 BTC</p>
+            <p>This is our fee to keep our services up & running, which is 10% of the network fees + 0.00025 BTC</p>
           </TooltipContent>
         </Tooltip>
 

@@ -39,9 +39,9 @@ function RecipientInput() {
     }
   }
   return (
-    <div className="w-full space-y-3">
+    <div className="w-full">
       <div className="flex items-center space-x-2">
-        <Label htmlFor="btc-address">Ordinal compatible BTC address</Label>
+        <Label htmlFor="btc-address">Recipient Bitcoin address</Label>
         <HoverCard>
           <HoverCardTrigger>
             <span tabIndex={0}>
@@ -65,6 +65,11 @@ function RecipientInput() {
           </HoverCardContent>
         </HoverCard>
       </div>
+      <p className="mt-1 mb-2 text-sm text-gray-700 dark:text-gray-400">
+        Enter the Bitcoin address where you want to receive your inscription.
+        This is also where we will send any refunds if need be.
+      </p>
+
       <Input
         type="text"
         onChange={(e) => setValue(e.target.value)}
@@ -153,7 +158,7 @@ export default function IndexPage() {
       </Head>
       <section className="container my-10">
         <div className="justify-center">
-          <h1 className=" text-center text-3xl font-black leading-tight tracking-tighter sm:text-3xl lg:text-4xl">
+          <h1 className="text-center text-3xl font-black leading-tight tracking-tighter sm:text-3xl lg:text-4xl">
             Inscribe content onto the Bitcoin Blockchain
           </h1>
           <h2 className="text-center text-xl tracking-tight text-gray-500 dark:text-gray-300">
