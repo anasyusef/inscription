@@ -42,7 +42,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                   (see{" "}
                   <Link
                     className="underline"
-                    href="https://gist.github.com/windsok/5b53a1ced6ef3eddbde260337de28980"
+                    href="https://docs.ordinals.com/guides/collecting/sparrow-wallet.html"
                     target="_blank"
                   >
                     this
