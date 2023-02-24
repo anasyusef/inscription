@@ -2,13 +2,14 @@ import { FormEvent, useState } from "react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { schemas } from "@/schemas"
 import { useAuthStore, useStore } from "@/store"
 import axios from "axios"
 import clsx from "clsx"
 import { Info, Loader2 } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
-import { PostOrder } from "@/types/api"
 import { supabase } from "@/lib/supabaseClient"
 import { isValidTaprootAddress } from "@/lib/utils"
 import FileUpload from "@/components/file-upload"
@@ -38,6 +39,7 @@ function RecipientInput() {
       store.setRecipientAddress(value)
     }
   }
+
   return (
     <div className="w-full">
       <div className="flex items-center space-x-2">
@@ -96,37 +98,47 @@ export default function IndexPage() {
     setError("")
     e.preventDefault()
     const { priorityFee, recipientAddress, txSpeed, files } = store
+    const orderId = uuidv4()
     try {
       setLoading(true)
-      const { data } = await axios.post<PostOrder>(`/api/orders`, {
-        priorityFee,
-        recipientAddress,
-        txSpeed,
-        uid: authStore.uid,
-        combinedFileSizes: files
-          .map((file) => file.size)
-          .reduce((a, b) => a + b, 0),
-      })
+      const {
+        data: { address },
+      } = await axios.get("/api/address")
+      const requests = files.map((file) =>
+        axios.post(`/api/orders`, {
+          priorityFee,
+          recipientAddress,
+          assignedAddress: address,
+          txSpeed,
+          uid: authStore.uid,
+          fileName: file.name,
+          fileSize: file.size,
+          orderId,
+          mimeType: file.type,
+        } as z.infer<(typeof schemas)["Orders"]["post"]>)
+      )
+
+      const responses = await Promise.all(requests)
 
       const arrayBuffers = await Promise.all(
         files.map((item) => item.arrayBuffer())
       )
 
-      const uploadPromises = files.map((item, idx) =>
+      const uploadPromises = responses.map((item, idx) =>
         supabase.storage
           .from("orders")
           .upload(
-            `${data.uid}/${data.orderId}/${uuidv4()}`,
+            `${authStore.uid}/${orderId}/${item.data.id}`,
             arrayBuffers[idx],
             {
-              contentType: item.type,
+              contentType: files[idx].type,
             }
           )
       )
 
       await Promise.all(uploadPromises)
       store.clear()
-      router.push(`/orders/${data.orderId}`)
+      router.push(`/orders/${orderId}`)
     } catch (e) {
       const msg = e.response.data.message
       if (typeof msg === "string") {

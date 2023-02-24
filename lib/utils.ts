@@ -26,8 +26,8 @@ export const isValidTaprootAddress = (address: string) => {
   try {
     const { network, type, bech32 } = getAddressInfo(address)
     // TODO - Change back to check mainnet address
-    if (network !== "mainnet" || type !== "p2tr" || !bech32) {
-      // if (type !== "p2tr" || !bech32) {
+    // if (network !== "mainnet" || type !== "p2tr" || !bech32) {
+      if (type !== "p2tr" || !bech32) {
       return false
     }
     return true

@@ -1,15 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next"
-import axios from "axios"
-import { v4 as uuidv4 } from "uuid"
+import { schemas } from "@/schemas"
+import { PrismaClient } from "@prisma/client"
 import { z } from "zod"
 
-import { supabase } from "@/lib/supabaseServerClient"
-import { calculateFees, isValidTaprootAddress, uuidv4Regex } from "@/lib/utils"
+import { supabase } from "@/lib/supabaseClient"
 
-const getSchema = z.object({
-  id: z.string().regex(uuidv4Regex),
-  uid: z.string().regex(uuidv4Regex),
-})
+const prisma = new PrismaClient()
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,35 +16,46 @@ export default async function handler(
   }
 
   if (req.method === "GET") {
-    let parsedSchema: z.infer<typeof getSchema>
+    const schema = schemas["Order"]["get"]
+    let parsedSchema: z.infer<typeof schema>
     try {
-      parsedSchema = getSchema.parse(req.query)
+      parsedSchema = schema.parse(req.query)
     } catch (e) {
       return res.status(400).json({ message: e.issues })
     }
     const { id: orderId, uid } = parsedSchema
 
-    const { data } = await supabase
-      .from("order")
-      .select(
-        `id,created_at,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address,
-        inscription (commit,inscription,reveal,send_tx,created_at)
-        `
-      )
-      .eq("id", orderId)
-      .eq("uid", uid)
-      .limit(1)
-      .single()
-    const { data: assetsData } = await supabase.storage
-      .from("orders")
-      .list(`${uid}/${orderId}`)
-    const assets = assetsData.map((asset) => ({
-      url: supabase.storage
-        .from("orders")
-        .getPublicUrl(`${uid}/${orderId}/${asset.name}`).data.publicUrl,
-      size: asset.metadata.size,
-      mimeType: asset.metadata.mimetype,
-    }))
-    return res.json({ ...data, assets })
+    const result = await prisma.order.findFirst({
+      where: { id: orderId, AND: { uid } },
+      select: {
+        id: true,
+        created_at: true,
+        updated_at: true,
+        files: {
+          select: {
+            id: true,
+            assigned_taproot_address: true,
+            commit_tx: true,
+            inscription_id: true,
+            network_fee: true,
+            priority_fee: true,
+            service_fee: true,
+            send_tx: true,
+            reveal_tx: true,
+            recipient_address: true,
+            name: true,
+            mime_type: true,
+          },
+        },
+      },
+    })
+    if (result) {
+      result.files.forEach((file) => {
+        ;(file as any).assetUrl = supabase.storage
+          .from("orders")
+          .getPublicUrl(`${uid}/${orderId}/${file.id}`).data.publicUrl
+      })
+    }
+    return res.json({ ...result })
   }
 }

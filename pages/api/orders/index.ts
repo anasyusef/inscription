@@ -1,26 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next"
-import axios from "axios"
-import { v4 as uuidv4 } from "uuid"
+import { schemas } from "@/schemas"
+import { PrismaClient } from "@prisma/client"
 import { z } from "zod"
 
-import { supabase } from "@/lib/supabaseServerClient"
-import { calculateFees, isValidTaprootAddress, uuidv4Regex } from "@/lib/utils"
+import { supabase } from "@/lib/supabaseClient"
+import { calculateFees } from "@/lib/utils"
 
-const postSchema = z
-  .object({
-    priorityFee: z.number().positive().max(99999),
-    txSpeed: z.enum(["slow", "normal", "fast", "custom"]),
-    recipientAddress: z.string().refine(isValidTaprootAddress, (val) => ({
-      message: `${val} is not an ordinal-compatible address`,
-    })),
-    combinedFileSizes: z.number().positive(),
-    uid: z.string().regex(uuidv4Regex),
-  })
-  .required()
-
-const getSchema = z.object({
-  uid: z.string().regex(uuidv4Regex),
-})
+;(BigInt.prototype as any).toJSON = function () {
+  return this.toString()
+}
+const prisma = new PrismaClient()
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,94 +20,109 @@ export default async function handler(
   }
 
   if (req.method === "GET") {
-    let parsedSchema: z.infer<typeof getSchema>
+    const schema = schemas["Orders"]["get"]
+    let parsedSchema: z.infer<typeof schema>
     try {
-      parsedSchema = getSchema.parse(req.query)
+      parsedSchema = schema.parse(req.query)
     } catch (e) {
       return res.status(400).json({ message: e.issues })
     }
     const { uid } = parsedSchema
 
-    const { data } = await supabase
-      .from("order")
-      .select(
-        `id,network_fee,service_fee,payable_amount,recipient_address,priority_fee,status,assigned_taproot_address,created_at`
-      )
-      .eq("uid", uid)
-      .order("created_at", { ascending: false })
-
-    const orderIds = data.map((item) => item.id)
-    const listAssetsPromises = orderIds.map((orderId) => ({
-      assets: supabase.storage.from("orders").list(`${uid}/${orderId}`),
-      orderId,
-    }))
-    const assets = {}
-    for (const item of listAssetsPromises) {
-      const { data } = await item.assets
-      assets[item.orderId] = data
-    }
-    data.forEach((orderItem) => {
-      const orderIdAssets = assets[orderItem.id]
-      ;(orderItem as any).assets = orderIdAssets.map((item) => ({
-        size: item.metadata.size,
-        mimeType: item.metadata.mimetype,
-        url: supabase.storage
-          .from("orders")
-          .getPublicUrl(`${uid}/${orderItem.id}/${item.name}`).data.publicUrl,
-      }))
+    const result = await prisma.order.findMany({
+      where: { uid },
+      orderBy: { updated_at: "desc" },
+      select: {
+        status: true,
+        id: true,
+        created_at: true,
+        updated_at: true,
+        files: { select: { mime_type: true, id: true, name: true } },
+      },
     })
 
-    return res.json({ orders: data })
+    result.forEach((item) => {
+      item.files.forEach((file) => {
+        ;(file as any).asset_url = supabase.storage
+          .from("orders")
+          .getPublicUrl(`${uid}/${item.id}/${file.id}`).data.publicUrl
+      })
+    })
+
+    return res.json({ orders: result })
   }
 
-  let parsedSchema: z.infer<typeof postSchema>
+  let parsedSchema: z.infer<(typeof schemas)["Orders"]["post"]>
   try {
-    parsedSchema = postSchema.parse(req.body)
+    parsedSchema = schemas["Orders"]["post"].parse(req.body)
   } catch (e) {
     return res.status(400).json({ message: e.issues })
   }
 
-  const { combinedFileSizes, priorityFee, recipientAddress, txSpeed, uid } =
-    parsedSchema
+  const {
+    orderId,
+    fileName,
+    priorityFee,
+    recipientAddress,
+    txSpeed,
+    assignedAddress,
+    mimeType,
+    fileSize,
+    uid,
+  } = parsedSchema
 
   const { networkFees, serviceFees, totalFees } = calculateFees(
-    combinedFileSizes,
+    fileSize,
     priorityFee
   )
 
-  const {
-    data: { address: assignedAddress },
-  } = await axios.get(`${process.env.NEXT_BACKEND_URL}/wallet`, {
-    headers: {
-      Authorization: `Bearer ${process.env.NEXT_SECRET_BACKEND_API_KEY}`,
-    },
-  })
+  console.log({ networkFees, serviceFees, totalFees })
 
-  const orderId = uuidv4()
+  try {
+    const order = await prisma.order.upsert({
+      where: { id: orderId },
+      create: {
+        total_payable_amount: totalFees,
+        id: orderId,
+        uid,
+      },
+      update: {
+        updated_at: new Date(),
+        total_payable_amount: {
+          increment: totalFees,
+        },
+      },
+      select: {
+        total_payable_amount: true,
+        id: true,
+        files: { select: { assigned_taproot_address: true } },
+      },
+    })
 
-  const { error } = await supabase.from("order").insert({
-    uid, // User ID
-    id: orderId,
-    network_fee: networkFees,
-    payable_amount: totalFees,
-    service_fee: serviceFees,
-    priority_fee: priorityFee,
-    tx_speed: txSpeed,
-    recipient_address: recipientAddress,
-    assigned_taproot_address: assignedAddress,
-  })
+    const result = await prisma.file.create({
+      data: {
+        network_fee: networkFees,
+        service_fee: serviceFees,
+        priority_fee: priorityFee,
+        tx_speed: txSpeed,
+        recipient_address: recipientAddress,
+        assigned_taproot_address: assignedAddress,
+        name: fileName,
+        order_id: order.id,
+        payable_amount: totalFees,
+        mime_type: mimeType,
+      },
+      select: {
+        id: true,
+        assigned_taproot_address: true,
+        priority_fee: true,
+        order: { select: { id: true, total_payable_amount: true } },
+      },
+    })
 
-  if (error) {
-    console.log(error)
-    return res.status(400).json({ message: "Something unexpected happened" })
+    return res.json({ ...result })
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ message: "Internal server error" })
   }
-
-  return res.status(200).json({
-    uid,
-    orderId,
-    assignedAddress,
-    recipientAddress,
-    totalFees,
-    priorityFee,
-  })
 }

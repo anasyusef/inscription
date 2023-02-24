@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Job {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  order_id   String    @unique @db.Uuid
+  retries    Int?      @default(1) @db.SmallInt
+  status     String?   @default("pending") @db.VarChar
+  order      Order     @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Order {
+  id                   String        @id @default(uuid()) @db.Uuid
+  created_at           DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime      @default(now()) @db.Timestamptz(6)
+  uid                  String        @db.Uuid
+  status               String        @default("payment_pending") @db.VarChar
+  total_payable_amount BigInt
+  files                File[]
+  txs                  Transaction[]
+  job                  Job?
+}
+
+model File {
+  id                       String  @id @default(uuid())
+  priority_fee             Float   @db.Real
+  service_fee              BigInt
+  network_fee              BigInt
+  payable_amount           BigInt
+  status                   String  @default("pending") @db.VarChar
+  tx_speed                 String  @db.VarChar
+  recipient_address        String  @db.Text
+  assigned_taproot_address String  @db.Text
+  object_id                String? @db.Uuid
+  order_id                 String  @db.Uuid
+  commit_tx                String? @db.VarChar
+  inscription_id           String? @db.VarChar
+  reveal_tx                String? @db.VarChar
+  fees                     BigInt?
+  send_tx                  String? @default("")
+  name                     String
+  mime_type                String
+  order                    Order   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Transaction {
+  tx_hash       String    @id(map: "tx_new_pkey") @db.VarChar
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  received_at   DateTime  @db.Timestamptz(6)
+  amount_sats   BigInt
+  confirmations Int
+  order_id      String    @db.Uuid
+  order         Order     @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
