@@ -214,14 +214,17 @@ export default function OrderPage() {
                   />
                 )}
 
-              {isSuccess && data?.data.status === "payment_pending" && (
-                <PaymentInstructions
-                  assignedBtcAddress={
-                    data.data.files[0].assigned_taproot_address
-                  }
-                  payableAmount={data.data.total_payable_amount}
-                />
-              )}
+              {isSuccess &&
+                ["payment_pending", "payment_received_unconfirmed"].includes(
+                  data?.data.status
+                ) && (
+                  <PaymentInstructions
+                    assignedBtcAddress={
+                      data.data.files[0].assigned_taproot_address
+                    }
+                    payableAmount={data.data.total_payable_amount}
+                  />
+                )}
               {/* {isSuccess && data?.data.status === "broadcasted" && (
               <InscriptionSummary commit={data?.data.} />
             )} */}
