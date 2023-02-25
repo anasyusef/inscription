@@ -37,20 +37,24 @@ export default async function handler(
         id: true,
         created_at: true,
         updated_at: true,
-        files: { select: { mime_type: true, id: true, name: true, status: true } },
+        files: {
+          select: { mime_type: true, id: true, name: true, status: true },
+        },
       },
     })
 
     result.forEach((item) => {
       let uiOrderStatusTitle = ""
-      const fileStatuses = item.files.map(f => f.status)
+      const fileStatuses = item.files.map((f) => f.status)
       const totalFiles = item.files.length
-      if (fileStatuses.some(val => val.includes("fail"))) {
+      if (fileStatuses.some((val) => val.includes("fail"))) {
         uiOrderStatusTitle = "Partially Failed"
-      } else if (fileStatuses.every(val => val.includes("sent"))) {
-        uiOrderStatusTitle = `Inscription${totalFiles > 1 ? 's' : ''} sent`
-      } else if (fileStatuses.every(val => val.includes("broadcast"))) {
-        uiOrderStatusTitle = `Inscription${totalFiles > 1 ? 's' : ''} broadcasted`
+      } else if (fileStatuses.every((val) => val.includes("sent"))) {
+        uiOrderStatusTitle = `Inscription${totalFiles > 1 ? "s" : ""} sent`
+      } else if (fileStatuses.every((val) => val.includes("broadcast"))) {
+        uiOrderStatusTitle = `Inscription${
+          totalFiles > 1 ? "s" : ""
+        } broadcasted`
       }
       ;(item as any).uiOrderStatusTitle = uiOrderStatusTitle
       item.files.forEach((file) => {
@@ -122,7 +126,7 @@ export default async function handler(
         order_id: order.id,
         payable_amount: totalFees,
         mime_type: mimeType,
-        is_service_fee_exempt: true
+        is_service_fee_exempt: true,
       },
       select: {
         id: true,
@@ -130,7 +134,7 @@ export default async function handler(
         priority_fee: true,
         order: { select: { id: true, total_payable_amount: true } },
       },
-    } as any)
+    })
 
     return res.json({ ...result })
   } catch (e) {
