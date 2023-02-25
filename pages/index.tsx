@@ -137,8 +137,8 @@ export default function IndexPage() {
       )
 
       await Promise.all(uploadPromises)
-      store.clear()
       router.push(`/orders/${orderId}`)
+      store.clear()
     } catch (e) {
       const msg = e.response.data.message
       if (typeof msg === "string") {

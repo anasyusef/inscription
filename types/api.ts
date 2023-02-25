@@ -20,16 +20,13 @@ export type PostOrder = {
 
 export type GetOrder = {
   id: string
-  network_fee: number
-  service_fee: number
-  payable_amount: number
-  recipient_address: string
+  uiOrderStatusTitle: string
+  uiOrderStatusSubTitle?: string
+  created_at: string
+  updated_at: string
+  total_payable_amount: number
+  files: FileRow[]
   status: string
-  assigned_taproot_address: string
-  priority_fee: number
-  assets?: Asset[]
-  created_at?: string
-  inscription: Inscription[]
 }
 
 export type Inscription = {
@@ -49,3 +46,21 @@ export type Asset = {
 export type GetOrders = {
   orders: GetOrder[]
 }
+
+export interface FileRow {
+  id: string
+  assigned_taproot_address: string
+  commit_tx: any
+  inscription_id: any
+  network_fee: string
+  priority_fee: number
+  service_fee: string
+  send_tx: string
+  reveal_tx: any
+  recipient_address: string
+  name: string
+  mime_type: string
+  asset_url: string
+  status: string
+}
+

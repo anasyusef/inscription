@@ -37,11 +37,22 @@ export default async function handler(
         id: true,
         created_at: true,
         updated_at: true,
-        files: { select: { mime_type: true, id: true, name: true } },
+        files: { select: { mime_type: true, id: true, name: true, status: true } },
       },
     })
 
     result.forEach((item) => {
+      let uiOrderStatusTitle = ""
+      const fileStatuses = item.files.map(f => f.status)
+      const totalFiles = item.files.length
+      if (fileStatuses.some(val => val.includes("fail"))) {
+        uiOrderStatusTitle = "Partially Failed"
+      } else if (fileStatuses.every(val => val.includes("sent"))) {
+        uiOrderStatusTitle = `Inscription${totalFiles > 1 ? 's' : ''} sent`
+      } else if (fileStatuses.every(val => val.includes("broadcast"))) {
+        uiOrderStatusTitle = `Inscription${totalFiles > 1 ? 's' : ''} broadcasted`
+      }
+      ;(item as any).uiOrderStatusTitle = uiOrderStatusTitle
       item.files.forEach((file) => {
         ;(file as any).asset_url = supabase.storage
           .from("orders")

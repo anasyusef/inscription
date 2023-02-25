@@ -9,9 +9,10 @@ import axios from "axios"
 import { Clipboard, File, Loader2 } from "lucide-react"
 import QRCode from "react-qr-code"
 
-import { GetOrder } from "@/types/api"
-import { STATUS, parseDate, parseFileSize, shortenAddress } from "@/lib/utils"
+import { FileRow, GetOrder } from "@/types/api"
+import { FILE_STATUS, STATUS, parseDate, parseFileSize, shortenAddress } from "@/lib/utils"
 import { Layout } from "@/components/layout"
+import { PreviewItemsCard } from "@/components/preview-items-card"
 import {
   Accordion,
   AccordionContent,
@@ -31,6 +32,7 @@ export default function OrderPage() {
 
   const { id } = router.query
   const { uid } = useAuthStore()
+  const [idx, setIdx] = useState(0)
   const { data, isLoading, isError, isSuccess } = useQuery(
     ["order", uid, id],
     () => axios.get<GetOrder>(`/api/orders/${id}?uid=${uid}`),
@@ -51,26 +53,18 @@ export default function OrderPage() {
 
       {isSuccess && (
         <>
-          <div className="flex border-b border-black/10 pb-4 dark:border-white/10">
-            {data.data.assets.map((asset) => (
-              <div className="max-w-fit rounded-md bg-slate-400/20 p-4">
-                {asset.mimeType.includes("image/") ? (
-                  <Image
-                    alt="thumbnail"
-                    src={asset.url}
-                    width={200}
-                    height={200}
-                  />
-                ) : (
-                  <File className="m-auto h-[150px] w-[100px]" />
-                )}
-                <div className=" my-2 rounded-md bg-slate-400/30 px-2 py-1">
-                  <p className="font-medium">
-                    File size: {parseFileSize(asset.size)}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="flex justify-center border-b border-black/10 pb-4 dark:border-white/10">
+            <PreviewItemsCard
+              idx={idx}
+              onIdxChange={setIdx}
+              variant="small"
+              items={data.data.files.map((item) => ({
+                assetUrl: item.asset_url,
+                mimeType: item.mime_type,
+                name: item.name,
+              }))}
+              cardProps={{ className: "justify-center bg-gray-200" }}
+            />
           </div>
           <div className="border-b border-black/10 pb-4 dark:border-white/10">
             <div className="mt-4 flex justify-between gap-2">
@@ -82,7 +76,7 @@ export default function OrderPage() {
             <div className="flex justify-between gap-2">
               <p className="mb-3 text-sm">Recipient address</p>
               <p className="mb-3 text-right text-xs xl:text-sm">
-                {shortenAddress(data.data.recipient_address, 10)}
+                {shortenAddress(data.data.files[idx].recipient_address, 10)}
               </p>
             </div>
             <div className="grid grid-cols-2">
@@ -99,13 +93,13 @@ export default function OrderPage() {
               </div>
               <div className="space-y-1 text-right">
                 <p className="text-sm text-gray-600 dark:text-gray-200">
-                  {data.data.priority_fee} sats/vB
+                  {data.data.files[idx].priority_fee} sats/vB
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-200">
-                  {data.data.service_fee} sats
+                  {data.data.files[idx].service_fee} sats
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-200">
-                  {data.data.network_fee} sats
+                  {data.data.files[idx].network_fee} sats
                 </p>
               </div>
             </div>
@@ -113,11 +107,11 @@ export default function OrderPage() {
           <div className="mt-4 grid grid-cols-2">
             <p>Total</p>
             <p className="text-right font-bold">
-              {data.data.payable_amount}{" "}
+              {data.data.total_payable_amount}{" "}
               <span className="text-sm font-normal">sats</span>
             </p>
             <p className="col-span-2 text-right text-sm">
-              ({data.data.payable_amount / 100_000_000} BTC)
+              ({data.data.total_payable_amount / 100_000_000} BTC)
             </p>
           </div>
         </>
@@ -148,7 +142,7 @@ export default function OrderPage() {
                     <div className="flex w-full flex-col border-b border-black/10 pb-2 dark:border-white/10">
                       <div className="flex w-full space-x-2 ">
                         <p className="text-lg font-semibold">
-                          Status: {STATUS[data.data.status].parsed}
+                          Order status: {data.data.uiOrderStatusTitle ? data.data.uiOrderStatusTitle : STATUS[data.data.status].parsed}
                         </p>
                         <div className="flex items-center space-x-2">
                           <span className="h-3 w-3 animate-pulse rounded-full bg-green-600"></span>
@@ -158,7 +152,7 @@ export default function OrderPage() {
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 dark:text-gray-300">
-                        {STATUS[data.data.status].info}
+                      {data.data.uiOrderStatusSubTitle ? data.data.uiOrderStatusSubTitle : STATUS[data.data.status].info}
                       </p>
                     </div>
                   </>
@@ -173,21 +167,40 @@ export default function OrderPage() {
 
               {isSuccess &&
                 [
+                  "payment_received_confirmed",
+                  "payment_overpaid_confirmed",
+                ].includes(data?.data.status) && data?.data.files.length > 1 && (
+                  <div className="mb-8 mt-4 flex w-full flex-col border-b border-black/10 pb-2 dark:border-white/10">
+                    <div className="flex w-full space-x-2 ">
+                      <p className="text-base font-medium">
+                        File status: {FILE_STATUS[data.data.files[idx].status].parsed}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {FILE_STATUS[data.data.files[idx].status].info(data.data.files[idx].name)}
+                    </p>
+                  </div>
+                )}
+
+              {isSuccess &&
+                [
                   "broadcasted",
                   "broadcasted_confirmed",
                   "inscription_sent",
                   "inscription_sent_confirmed",
-                ].includes(data?.data.status) && (
+                ].includes(data?.data.files[idx].status) && (
                   <InscriptionSummary
-                    order={data?.data}
+                    file={data?.data.files[idx]}
                     status={data?.data.status}
                   />
                 )}
 
               {isSuccess && data?.data.status === "payment_pending" && (
                 <PaymentInstructions
-                  assignedBtcAddress={data.data.assigned_taproot_address}
-                  payableAmount={data.data.payable_amount}
+                  assignedBtcAddress={
+                    data.data.files[0].assigned_taproot_address
+                  }
+                  payableAmount={data.data.total_payable_amount}
                 />
               )}
               {/* {isSuccess && data?.data.status === "broadcasted" && (
@@ -206,16 +219,15 @@ export default function OrderPage() {
 }
 
 interface InscriptionSummaryProps {
-  order: GetOrder
+  file: FileRow
   status: string
 }
 
-function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
-  const inscription = order.inscription[0]
+function InscriptionSummary({ file, status }: InscriptionSummaryProps) {
   const [copied, setCopied] = useState(false)
   const handleClick = async () => {
     setCopied(true)
-    await navigator.clipboard.writeText(inscription.inscription)
+    await navigator.clipboard.writeText(file.inscription_id)
   }
   return (
     <>
@@ -223,11 +235,7 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
         <div className="flex w-full items-center justify-between space-x-4">
           <p className="min-w-fit">Inscription ID</p>{" "}
           <div className="flex w-full items-center space-x-2">
-            <Input
-              className="w-full"
-              readOnly
-              value={inscription.inscription}
-            />
+            <Input className="w-full" readOnly value={file.inscription_id} />
             <Button
               onMouseOut={() => setCopied(false)}
               onClick={handleClick}
@@ -237,7 +245,7 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
             </Button>
           </div>
         </div>
-        {status !== "inscription_sent_confirmed" ? (
+        {file.status !== "inscription_sent_confirmed" ? (
           <p className="text-sm text-gray-700 dark:text-gray-300">
             Your inscription won&apos;t be shown on the ordinals explorer until
             it reaches 1-2 confirmations by the network
@@ -246,7 +254,7 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
           <div className="flex w-full justify-end">
             <Link
               target="_blank"
-              href={`https://ordinals.com/inscription/${inscription.inscription}`}
+              href={`https://ordinals.com/inscription/${file.inscription_id}`}
             >
               <Button className="justify-end" variant="subtle">
                 View inscription
@@ -263,18 +271,18 @@ function InscriptionSummary({ order, status }: InscriptionSummaryProps) {
               <p className="font-semibold uppercase">Commit tx</p>
               <Link
                 target="_blank"
-                href={`https://mempool.space/tx/${inscription.commit}`}
+                href={`https://mempool.space/tx/${file.commit_tx}`}
                 className="col-span-5 text-right uppercase underline"
               >
-                {inscription.commit}
+                {file.commit_tx}
               </Link>
               <p className="font-semibold uppercase">Reveal tx</p>
               <Link
                 target="_blank"
-                href={`https://mempool.space/tx/${inscription.reveal}`}
+                href={`https://mempool.space/tx/${file.reveal_tx}`}
                 className="col-span-5 text-right uppercase underline"
               >
-                {inscription.reveal}
+                {file.reveal_tx}
               </Link>
             </div>
           </AccordionContent>
@@ -364,3 +372,23 @@ function PaymentInstructions({
     </>
   )
 }
+
+// {data.data.files.map((asset) => (
+//   <div className="max-w-fit rounded-md bg-slate-400/20 p-4">
+//     {asset.mime_type.includes("image/") ? (
+//       <Image
+//         alt="thumbnail"
+//         src={asset.assetUrl}
+//         width={200}
+//         height={200}
+//       />
+//     ) : (
+//       <File className="m-auto h-[150px] w-[100px]" />
+//     )}
+//     <div className=" my-2 rounded-md bg-slate-400/30 px-2 py-1">
+//       {/* <p className="font-medium">
+//         File size: {parseFileSize(asset)}
+//       </p> */}
+//     </div>
+//   </div>
+// ))}

@@ -31,25 +31,26 @@ model Order {
 }
 
 model File {
-  id                       String  @id @default(uuid())
-  priority_fee             Float   @db.Real
+  id                       String    @id @default(uuid())
+  priority_fee             Float     @db.Real
   service_fee              BigInt
   network_fee              BigInt
   payable_amount           BigInt
-  status                   String  @default("pending") @db.VarChar
-  tx_speed                 String  @db.VarChar
-  recipient_address        String  @db.Text
-  assigned_taproot_address String  @db.Text
-  object_id                String? @db.Uuid
-  order_id                 String  @db.Uuid
-  commit_tx                String? @db.VarChar
-  inscription_id           String? @db.VarChar
-  reveal_tx                String? @db.VarChar
+  status                   String    @default("pending") @db.VarChar
+  tx_speed                 String    @db.VarChar
+  recipient_address        String    @db.Text
+  assigned_taproot_address String    @db.Text
+  object_id                String?   @db.Uuid
+  order_id                 String    @db.Uuid
+  commit_tx                String?   @db.VarChar
+  inscription_id           String?   @db.VarChar
+  reveal_tx                String?   @db.VarChar
   fees                     BigInt?
-  send_tx                  String? @default("")
+  send_tx                  String?   @default("")
   name                     String
   mime_type                String
-  order                    Order   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  order                    Order     @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  created_at               DateTime? @default(now()) @db.Timestamptz(6)
 }
 
 model Transaction {

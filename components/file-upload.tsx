@@ -8,6 +8,8 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Key } from "ts-key-enum"
 
 import { parseFileSize } from "@/lib/utils"
+import { PreviewAsset } from "./preview-asset"
+import { PreviewItemsCard } from "./preview-items-card"
 import { Button, buttonVariants } from "./ui/button"
 import { Input } from "./ui/input"
 import { TooltipContent } from "./ui/tooltip"
@@ -17,6 +19,8 @@ type Props = {}
 const MAX_SIZE = 390 * 1000 // 390kB
 export default function FileUpload({}: Props) {
   const store = useStore()
+
+  const [idx, setIdx] = useState(0)
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -109,110 +113,16 @@ export default function FileUpload({}: Props) {
         </div>
       )}
       <div className="flex w-full flex-col items-center justify-center">
-        {store.files.length > 0 && <PreviewItems />}
-      </div>
-    </>
-  )
-}
-
-// interface PreviewItemProps {
-//   index: number
-// }
-
-function PreviewItems() {
-  const files = useStore((item) => item.files)
-  const setFiles = useStore((item) => item.setFiles)
-  const [idx, setIdx] = useState(0)
-
-  const handlePrevious = () => {
-    if (isPreviousItem) {
-      setIdx(idx - 1)
-    }
-  }
-
-  const handleNext = () => {
-    if (isNextItem) {
-      setIdx(idx + 1)
-    }
-  }
-
-  useHotkeys(Key.ArrowLeft, handlePrevious)
-  useHotkeys(Key.ArrowRight, handleNext)
-  const isNextItem = idx < files.length - 1
-  const isPreviousItem = idx > 0
-  const file = files[idx]
-
-  return (
-    <>
-      <div>
-        <div className="rounded-md border border-black/5 bg-gray-50 p-4 dark:border-white/5 dark:bg-gray-900">
-          <PreviewImage file={file} />
-        </div>
-        <div className="flex w-full justify-end">
-          <Button
-            type="button"
-            onClick={() => setFiles([])}
-            size="sm"
-            className="mt-2 h-fit underline"
-            variant="link"
-          >
-            Clear
-          </Button>
-        </div>
-        <div className="my-2 flex w-[284px] justify-center">
-          <div className="flex flex-col justify-center space-y-0 text-center">
-            <p className="text-base">{file.name}</p>
-            <p className="text-sm">{parseFileSize(file.size)}</p>
-          </div>
-        </div>
-        {files.length > 1 && (
-          <div className="flex items-center justify-center space-x-4">
-            <Tooltip>
-              <TooltipTrigger
-                onClick={handlePrevious}
-                disabled={!isPreviousItem}
-                type="button"
-                className={buttonVariants({ size: "sm", className: "w-24", variant: "outline" })}
-              >
-                Previous
-              </TooltipTrigger>
-              <TooltipContent>Left arrow key</TooltipContent>
-            </Tooltip>
-            <p className="flex justify-center text-lg font-semibold">
-              {idx + 1} of {files.length}
-            </p>
-            <Tooltip>
-              <TooltipTrigger
-                onClick={handleNext}
-                disabled={!isNextItem}
-                type="button"
-                className={buttonVariants({ className: "w-24", size: "sm", variant: "outline" })}
-              >Next</TooltipTrigger>
-              <TooltipContent>Right arrow key</TooltipContent>
-
-            </Tooltip>
-          </div>
+        {store.files.length > 0 && (
+          <PreviewItemsCard
+            idx={idx}
+            onIdxChange={setIdx}
+            variant="medium"
+            items={store.files}
+            onClear={() => store.setFiles([])}
+          />
         )}
       </div>
     </>
-  )
-}
-
-function PreviewImage({ file }: { file: File }) {
-  if (file.type.startsWith("image/")) {
-    return (
-      <Image
-        alt="preview-image"
-        height={250}
-        width={250}
-        className="h-[250px] w-[250px] "
-        src={URL.createObjectURL(file)}
-      />
-    )
-  }
-  return (
-    <div className="flex h-[250px] w-[250px] justify-center">
-      <FileText className="m-auto h-[150px] w-[150px] text-gray-700 dark:text-gray-200" />
-    </div>
   )
 }

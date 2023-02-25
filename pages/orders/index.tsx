@@ -19,7 +19,7 @@ export default function OrdersPage() {
   )
 
   const EmptyState = (
-    <div className="h-[300px] flex w-full flex-col items-center justify-center">
+    <div className="flex h-[300px] w-full flex-col items-center justify-center">
       <h1 className="w-full justify-center text-center text-xl font-bold uppercase">
         No orders found {":("}
       </h1>
@@ -56,25 +56,27 @@ export default function OrdersPage() {
                           {order.id}
                         </p>
                       </div>
-                      {order.assets.map((asset) => (
-                        <div
-                          key={asset.url}
-                          className="my-2 max-w-fit rounded-md bg-slate-400/20 p-4"
-                        >
-                          {asset.mimeType.includes("image/") ? (
-                            <Image
-                              alt="thumbnail"
-                              src={asset.url}
-                              width={50}
-                              height={50}
-                            />
-                          ) : (
-                            <File className="m-auto h-[50px] w-[50px]" />
-                          )}
-                        </div>
-                      ))}
+                      <div className="flex space-x-2">
+                        {order.files.slice(0, 3).map((file) => (
+                          <div
+                            key={file.id}
+                            className="my-2 max-w-fit rounded-md bg-slate-400/20 p-4"
+                          >
+                            {file.mime_type.startsWith("image/") ? (
+                              <Image
+                                alt="thumbnail"
+                                src={file.asset_url}
+                                width={50}
+                                height={50}
+                              />
+                            ) : (
+                              <File className="m-auto h-[50px] w-[50px]" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
                       <div className="mt-4 text-xs font-semibold uppercase">
-                        {STATUS[order.status].parsed}
+                        {order.uiOrderStatusTitle ? order.uiOrderStatusTitle : STATUS[order.status].parsed}
                       </div>
                       <p className="text-sm">{parseDate(order.created_at)}</p>
                       <Button
