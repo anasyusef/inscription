@@ -1,6 +1,7 @@
 import { useStore } from "@/store"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import { sum } from "lodash"
 
 import { calculateFees, cn } from "@/lib/utils"
 import {
@@ -85,6 +86,12 @@ export const TransactionCost = () => {
 
   if (!store.files.length) return null
   const fees = calculateFees(store.files[0].size, store.priorityFee)
+  const fileFees = store.files.map((file) =>
+    calculateFees(file.size, store.priorityFee)
+  )
+  const totalNetworkFees = sum(fileFees.map((item) => item.networkFees))
+  const totalServiceFees = sum(fileFees.map((item) => item.serviceFees))
+  const totalFees = sum(fileFees.map((item) => item.totalFees))
   return (
     <>
       <div className="grid grid-cols-3 grid-rows-2 items-center gap-x-4 gap-y-1 text-right sm:gap-y-0">
@@ -100,12 +107,12 @@ export const TransactionCost = () => {
           </TooltipContent>
         </Tooltip>
         <GridContent>
-          {fees.networkFees} <span className="text-xs sm:text-sm">sats</span>
+          {totalNetworkFees} <span className="text-xs sm:text-sm">sats</span>
         </GridContent>
         <PriceData
           isLoading={isLoading}
           rate={data?.data.price}
-          value={fees.networkFees}
+          value={totalNetworkFees}
         />
 
         <Tooltip open={false}>
@@ -132,25 +139,25 @@ export const TransactionCost = () => {
         </Tooltip>
 
         <GridContent className="line-through">
-          {fees.serviceFees} <span className="text-xs sm:text-sm">sats</span>
+          {totalServiceFees} <span className="text-xs sm:text-sm">sats</span>
         </GridContent>
 
         <PriceData
           isLoading={isLoading}
           rate={data?.data.price}
-          value={fees.serviceFees}
+          value={totalServiceFees}
           className="line-through"
         />
       </div>
       <div className="grid grid-cols-3 items-center gap-x-3 text-right">
         <p className="text-left text-xs md:text-base">Total cost</p>
         <p className="text-xs font-bold md:text-base">
-          {fees.totalFees} <span className="text-xs sm:text-sm">sats</span>
+          {totalFees} <span className="text-xs sm:text-sm">sats</span>
         </p>
         <PriceData
           isLoading={isLoading}
           rate={data?.data.price}
-          value={fees.totalFees}
+          value={totalFees}
         />
       </div>
     </>
