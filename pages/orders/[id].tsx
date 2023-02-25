@@ -10,7 +10,13 @@ import { Clipboard, File, Loader2 } from "lucide-react"
 import QRCode from "react-qr-code"
 
 import { FileRow, GetOrder } from "@/types/api"
-import { FILE_STATUS, STATUS, parseDate, parseFileSize, shortenAddress } from "@/lib/utils"
+import {
+  FILE_STATUS,
+  STATUS,
+  parseDate,
+  parseFileSize,
+  shortenAddress,
+} from "@/lib/utils"
 import { Layout } from "@/components/layout"
 import { PreviewItemsCard } from "@/components/preview-items-card"
 import {
@@ -142,7 +148,10 @@ export default function OrderPage() {
                     <div className="flex w-full flex-col border-b border-black/10 pb-2 dark:border-white/10">
                       <div className="flex w-full space-x-2 ">
                         <p className="text-lg font-semibold">
-                          Order status: {data.data.uiOrderStatusTitle ? data.data.uiOrderStatusTitle : STATUS[data.data.status].parsed}
+                          Order status:{" "}
+                          {data.data.uiOrderStatusTitle
+                            ? data.data.uiOrderStatusTitle
+                            : STATUS[data.data.status].parsed}
                         </p>
                         <div className="flex items-center space-x-2">
                           <span className="h-3 w-3 animate-pulse rounded-full bg-green-600"></span>
@@ -152,7 +161,9 @@ export default function OrderPage() {
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {data.data.uiOrderStatusSubTitle ? data.data.uiOrderStatusSubTitle : STATUS[data.data.status].info}
+                        {data.data.uiOrderStatusSubTitle
+                          ? data.data.uiOrderStatusSubTitle
+                          : STATUS[data.data.status].info}
                       </p>
                     </div>
                   </>
@@ -169,15 +180,19 @@ export default function OrderPage() {
                 [
                   "payment_received_confirmed",
                   "payment_overpaid_confirmed",
-                ].includes(data?.data.status) && data?.data.files.length > 1 && (
+                ].includes(data?.data.status) &&
+                data?.data.files.length > 1 && (
                   <div className="mb-8 mt-4 flex w-full flex-col border-b border-black/10 pb-2 dark:border-white/10">
                     <div className="flex w-full space-x-2 ">
                       <p className="text-base font-medium">
-                        File status: {FILE_STATUS[data.data.files[idx].status].parsed}
+                        File status:{" "}
+                        {FILE_STATUS[data.data.files[idx].status].parsed}
                       </p>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {FILE_STATUS[data.data.files[idx].status].info(data.data.files[idx].name)}
+                      {FILE_STATUS[data.data.files[idx].status].info(
+                        data.data.files[idx].name
+                      )}
                     </p>
                   </div>
                 )}

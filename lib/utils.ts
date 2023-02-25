@@ -89,6 +89,11 @@ export const STATUS = {
 } as const
 
 export const FILE_STATUS = {
+  pending: {
+    parsed: "Pending to inscribe",
+    info: (file_name: string) =>
+      `${file_name} is now queued to inscribe. It should proceed to inscribe shortly`,
+  },
   inscribing: {
     parsed: "Inscribing",
     info: (file_name: string) => `Inscribing ${file_name}`,
