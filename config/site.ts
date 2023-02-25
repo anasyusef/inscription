@@ -6,8 +6,8 @@ interface SiteConfig {
   mainNav: NavItem[]
   links: {
     twitter: string
-    github: string
-    docs: string
+    discord: string
+    docs?: string
   }
 }
 
@@ -21,13 +21,12 @@ export const siteConfig: SiteConfig = {
       href: "/",
     },
     {
-      title: "Orders",
+      title: "My Orders",
       href: "/orders",
     },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
-    docs: "https://ui.shadcn.com",
+    twitter: "https://twitter.com/inscribit_xyz",
+    discord: "https://discord.gg/ordinals"
   },
 }

@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Image from "next/image"
 
 interface MainNavProps {
   items?: NavItem[]
@@ -21,12 +22,10 @@ interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps) {
   return (
-    <div className="flex gap-6 md:gap-10">
+    <div className="flex gap-6 md:gap-10 h-full">
       <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Icons.logo className="h-6 w-6" />
-        <span className="hidden font-bold sm:inline-block">
-          {siteConfig.name}
-        </span>
+        <Image className="hidden dark:block" alt="logo" src={"/original-light-logo.png"} height={150} width={150} />
+        <Image className="dark:hidden" alt="logo" src={"/original-full-logo.png"} height={150} width={150} />
       </Link>
       {items?.length ? (
         <nav className="hidden gap-6 md:flex">
