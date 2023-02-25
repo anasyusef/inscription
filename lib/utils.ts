@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const calculateFees = (fileSize: number, priorityFee: number) => {
-  const baseNetworkFee = 290
+  const baseNetworkFee = 292
   const baseFee = 0.00025 * 100_000_000
   const pctFee = 0.1
   const segwitFileSize = fileSize / 4
