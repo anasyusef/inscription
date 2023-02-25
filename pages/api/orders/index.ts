@@ -130,7 +130,7 @@ export default async function handler(
         priority_fee: true,
         order: { select: { id: true, total_payable_amount: true } },
       },
-    })
+    } as any)
 
     return res.json({ ...result })
   } catch (e) {
