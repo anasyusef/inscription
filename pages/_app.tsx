@@ -7,6 +7,7 @@ import { useEffect } from "react"
 import { useAuthStore } from "@/store"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { Analytics } from "@vercel/analytics/react"
 
 import { uuidv4Regex } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -43,6 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <ReactQueryDevtools position="bottom-right" />
         </QueryClientProvider>
       </ThemeProvider>
+      <Analytics />
     </>
   )
 }
