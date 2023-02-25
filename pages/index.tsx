@@ -166,7 +166,7 @@ export default function IndexPage() {
           content="Inscribe content onto the Bitcoin Blockchain"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* <link rel="icon" href="/favicon.ico" /> */}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <section className="container my-10">
         <div className="justify-center">

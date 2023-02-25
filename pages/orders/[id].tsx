@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Error from "next/error"
+import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -127,6 +128,9 @@ export default function OrderPage() {
 
   return (
     <Layout>
+      <Head>
+        <title>Order {id}</title>
+      </Head>
       <section className="my-10 flex w-full justify-center">
         <div className="space-y-4 sm:w-2/3">
           <h2 className="px-6 text-lg font-semibold uppercase">

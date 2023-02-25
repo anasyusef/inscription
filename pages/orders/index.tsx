@@ -10,6 +10,7 @@ import { GetOrders } from "@/types/api"
 import { STATUS, parseDate, parseFileSize } from "@/lib/utils"
 import { Layout } from "@/components/layout"
 import { Button } from "@/components/ui/button"
+import Head from "next/head"
 
 export default function OrdersPage() {
   const store = useAuthStore()
@@ -32,6 +33,9 @@ export default function OrdersPage() {
 
   return (
     <Layout>
+      <Head>
+        <title>My Orders</title>
+      </Head>
       <section className="my-10 flex w-full justify-center">
         <div className="w-full space-y-4">
           <h1 className="container text-lg font-semibold uppercase">
