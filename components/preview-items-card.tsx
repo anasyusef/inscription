@@ -52,6 +52,13 @@ export function PreviewItemsCard({
     }
   }
 
+  const handleClear = () => {
+    if (onClear) {
+      onClear()
+      onIdxChange(0)
+    }
+  }
+
   useHotkeys(Key.ArrowLeft, handlePrevious)
   useHotkeys(Key.ArrowRight, handleNext)
   const isNextItem = idx < items.length - 1
@@ -81,7 +88,7 @@ export function PreviewItemsCard({
         <div className="flex w-full justify-end">
           <Button
             type="button"
-            onClick={onClear}
+            onClick={handleClear}
             size="sm"
             className="mt-2 h-fit underline"
             variant="link"

@@ -49,7 +49,7 @@ export function PreviewAsset({
         alt="preview-image"
         height={props.height}
         width={props.width}
-        className={props.className}
+        className={`${props.className} object-contain`}
         src={src}
       />
     )
