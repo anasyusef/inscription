@@ -76,7 +76,7 @@ export default async function handler(
           "The file failed to inscribe somewhere in the process"
       }
       uiOrderStatusSubTitle =
-        "Please get in touch with anasy#9409 on Discord or DM me us on Twitter @inscribit_xyz to resolve this as soon as possible"
+        "Please get in touch with anasy#9409 on Discord or DM us on Twitter @inscribit_xyz to resolve this as soon as possible"
     } else if (
       fileStatuses.every((item) => item === "inscription_sent_confirmed")
     ) {
