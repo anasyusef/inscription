@@ -99,9 +99,9 @@ export const TransactionCost = () => {
           <TooltipTrigger onClick={handleClick}>
             <GridTitle>Network fee</GridTitle>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent className="max-w-sm text-center">
             <p>
-              This is the fee that the Bitcoin network takes. It&apos;s
+              This is the fee that the Bitcoin network takes + the sats required to send to inscribe an asset, which is 10,000. It&apos;s
               calculated based on the size of the file
             </p>
           </TooltipContent>
@@ -115,11 +115,15 @@ export const TransactionCost = () => {
           value={totalNetworkFees}
         />
 
-        <Tooltip open={false}>
+        <Tooltip
+        // open={false}
+        >
           <TooltipTrigger onClick={handleClick}>
             <div className="flex cursor-default items-center space-x-4">
-              <GridTitle className="line-through">Service fee </GridTitle>
-              <div
+              <GridTitle
+              //  className="line-through"
+               >Service fee </GridTitle>
+              {/* <div
                 style={{
                   background:
                     "linear-gradient(150deg, #569AFF 11.21%, #88DFAB 84.57%)",
@@ -127,10 +131,13 @@ export const TransactionCost = () => {
                 className="flex rounded-md py-1 px-2 text-xs font-bold text-white no-underline"
               >
                 0% fee
-              </div>
+              </div> */}
             </div>
           </TooltipTrigger>
-          <TooltipContent className="pointer-events-none">
+          <TooltipContent
+          className="max-w-sm text-center"
+          // className="pointer-events-none"
+          >
             <p>
               This is our fee to keep our services up & running, which is 10% of
               the network fees + 0.00025 BTC
@@ -138,7 +145,9 @@ export const TransactionCost = () => {
           </TooltipContent>
         </Tooltip>
 
-        <GridContent className="line-through">
+        <GridContent
+        //  className="line-through"
+         >
           {totalServiceFees} <span className="text-xs sm:text-sm">sats</span>
         </GridContent>
 
@@ -146,7 +155,7 @@ export const TransactionCost = () => {
           isLoading={isLoading}
           rate={data?.data.price}
           value={totalServiceFees}
-          className="line-through"
+          // className="line-through"
         />
       </div>
       <div className="grid grid-cols-3 items-center gap-x-3 text-right">
