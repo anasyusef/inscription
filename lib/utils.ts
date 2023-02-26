@@ -8,14 +8,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const calculateFees = (fileSize: number, priorityFee: number) => {
-  const baseNetworkFee = 300
   const inscriptionValue = 10_000
-  const baseFee = 0.0001 * 100_000_000
-  const pctFee = 0.1
+  const baseFee = +process.env.NEXT_PUBLIC_BASE_FEE * 100_000_000
   const segwitFileSize = fileSize / 4
   const networkFees =
-    (segwitFileSize + baseNetworkFee) * priorityFee + inscriptionValue
-  const serviceFees = (networkFees + inscriptionValue) * pctFee + baseFee // Temporarily remove service fees
+    (segwitFileSize + +process.env.NEXT_PUBLIC_BASE_NETWORK_FEE) * priorityFee +
+    inscriptionValue
+  const serviceFees =
+    (networkFees + inscriptionValue) * +process.env.NEXT_PUBLIC_PCT_FEE +
+    baseFee
 
   return {
     networkFees: Math.floor(networkFees),
