@@ -86,6 +86,10 @@ export const STATUS = {
     parsed: "Inscription sent",
     info: "The inscription has been sent and confirmed! If you have any questions or concerns, don't hesitate to reach out to us. Enjoy your inscription!",
   },
+  refunded: {
+    parsed: "Refunded",
+    info: "This order has been refunded and the amount has been sent to the recipient address",
+  },
 } as const
 
 export const FILE_STATUS = {
