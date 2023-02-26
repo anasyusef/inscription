@@ -37,7 +37,7 @@ export default function FileUpload({}: Props) {
     fileRejections,
   } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple: false,
     maxSize: MAX_SIZE,
     accept: {
       "application/json": [".json"],

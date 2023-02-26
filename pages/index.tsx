@@ -187,31 +187,39 @@ export default function IndexPage() {
           onSubmit={handleSubmit}
         >
           <FileUpload />
-
-          <div className="flex w-full flex-col space-y-5 rounded-md border border-black/5 bg-gray-50 p-4 dark:border-white/5 dark:bg-gray-900 sm:w-2/3 sm:p-10">
-            <div className="flex w-full justify-center">
-              <RecipientInput />
-            </div>
-            {!!store.files.length && (
-              <div className="flex w-full flex-col items-center">
-                <TransactionSpeed />
+          <div className="flex w-full flex-col items-center justify-center">
+            <Link
+              target="_blank"
+              href="https://forms.gle/G99cW9mXLCbhZskF8"
+              className="mb-4 cursor-pointer text-gray-500 underline underline-offset-4 dark:text-gray-400"
+            >
+              Register your interest try out the bulk upload feature!
+            </Link>
+            <div className="flex w-full flex-col space-y-5 rounded-md border border-black/5 bg-gray-50 p-4 dark:border-white/5 dark:bg-gray-900 sm:w-2/3 sm:p-10">
+              <div className="flex w-full justify-center">
+                <RecipientInput />
               </div>
-            )}
-            <div className="mx-auto space-y-2 pb-5">
-              <TransactionCost />
-            </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <Button
-                className="w-full md:w-1/2"
-                type="submit"
-                variant="default"
-                disabled={!isFormValid || loading}
-              >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit & Pay
-              </Button>
+              {!!store.files.length && (
+                <div className="flex w-full flex-col items-center">
+                  <TransactionSpeed />
+                </div>
+              )}
+              <div className="mx-auto space-y-2 pb-5">
+                <TransactionCost />
+              </div>
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <Button
+                  className="w-full md:w-1/2"
+                  type="submit"
+                  variant="default"
+                  disabled={!isFormValid || loading}
+                >
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Submit & Pay
+                </Button>
 
-              {error && <p className="text-red-500">{error}</p>}
+                {error && <p className="text-red-500">{error}</p>}
+              </div>
             </div>
           </div>
         </form>
