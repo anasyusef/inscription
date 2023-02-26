@@ -126,6 +126,7 @@ export default async function handler(
         order_id: order.id,
         payable_amount: totalFees,
         mime_type: mimeType,
+        size: fileSize,
         is_service_fee_exempt: true,
       },
       select: {
