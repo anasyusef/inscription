@@ -22,7 +22,7 @@ interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps) {
   return (
-    <div className="flex h-full gap-6 md:gap-10 items-center">
+    <div className="flex h-full items-center gap-6 md:gap-10">
       <Link href="/" className="hidden items-center space-x-2 md:flex">
         <Image
           className="hidden dark:block"
@@ -75,7 +75,8 @@ export function MainNav({ items }: MainNavProps) {
         >
           <DropdownMenuLabel>
             <Link href="/" className="flex items-center">
-              <Image alt="logo" src="/original-full-logo.png" height={48} width={128} />
+              <Image alt="logo" className="dark:hidden" src="/original-full-logo.png" height={48} width={128} />
+              <Image alt="logo" className="hidden dark:block" src="/original-light-logo.png" height={48} width={128} />
             </Link>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
