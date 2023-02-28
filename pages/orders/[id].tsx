@@ -37,8 +37,9 @@ import {
 export default function OrderPage() {
   const router = useRouter()
 
-  const { id } = router.query
-  const { uid } = useAuthStore()
+  const { id, uid: queryUid } = router.query
+  const authStore = useAuthStore()
+  const uid = queryUid || authStore.uid
   const [idx, setIdx] = useState(0)
   const { data, isLoading, isError, isSuccess } = useQuery(
     ["order", uid, id],
