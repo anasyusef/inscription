@@ -1,4 +1,5 @@
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 
 import { NavItem } from "@/types/nav"
@@ -14,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import Image from "next/image"
 
 interface MainNavProps {
   items?: NavItem[]
@@ -24,8 +24,20 @@ export function MainNav({ items }: MainNavProps) {
   return (
     <div className="flex h-full gap-6 md:gap-10 items-center">
       <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Image className="hidden dark:block" alt="logo" src={"/original-light-logo.png"} height={150} width={150} />
-        <Image className="dark:hidden" alt="logo" src={"/original-full-logo.png"} height={150} width={150} />
+        <Image
+          className="hidden dark:block"
+          alt="logo"
+          src={"/original-light-logo.png"}
+          height={150}
+          width={150}
+        />
+        <Image
+          className="dark:hidden"
+          alt="logo"
+          src={"/original-full-logo.png"}
+          height={150}
+          width={150}
+        />
       </Link>
       {items?.length ? (
         <nav className="hidden gap-6 md:flex">
@@ -63,7 +75,7 @@ export function MainNav({ items }: MainNavProps) {
         >
           <DropdownMenuLabel>
             <Link href="/" className="flex items-center">
-              <Icons.logo className="mr-2 h-4 w-4" /> {siteConfig.name}
+              <Image alt="logo" src="/original-full-logo.png" height={48} width={128} />
             </Link>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
