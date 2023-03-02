@@ -28,6 +28,7 @@ model Order {
   files                File[]
   txs                  Transaction[]
   job                  Job?
+  ref                  String?
 }
 
 model File {

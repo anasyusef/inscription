@@ -19,6 +19,7 @@ export const schemas = {
           message: `${val} is not an ordinal-compatible address`,
         })),
         uid: z.string().regex(uuidv4Regex),
+        ref: z.string().nullable(),
       })
       .required(),
     get: z

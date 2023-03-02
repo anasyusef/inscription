@@ -84,6 +84,7 @@ export default async function handler(
     mimeType,
     fileSize,
     uid,
+    ref,
   } = parsedSchema
 
   const { networkFees, serviceFees, totalFees } = calculateFees(
@@ -91,7 +92,7 @@ export default async function handler(
     priorityFee
   )
 
-  console.log({ networkFees, serviceFees, totalFees })
+  console.log({ networkFees, serviceFees, totalFees, ref })
 
   try {
     const order = await prisma.order.upsert({
@@ -100,6 +101,7 @@ export default async function handler(
         total_payable_amount: totalFees,
         id: orderId,
         uid,
+        ref,
       },
       update: {
         updated_at: new Date(),

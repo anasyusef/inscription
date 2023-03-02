@@ -115,6 +115,7 @@ export default function IndexPage() {
           fileSize: file.size,
           orderId,
           mimeType: file.type,
+          ref: router.query.ref || null,
         } as z.infer<(typeof schemas)["Orders"]["post"]>)
       )
 
