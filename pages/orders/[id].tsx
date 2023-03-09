@@ -156,7 +156,7 @@ export default function OrderPage() {
                           Order status:{" "}
                           {data.data.uiOrderStatusTitle
                             ? data.data.uiOrderStatusTitle
-                            : STATUS[data.data.status].parsed}
+                            : (STATUS as any)[data.data.status].parsed}
                         </p>
                         <div className="flex items-center space-x-2">
                           <span className="h-3 w-3 animate-pulse rounded-full bg-green-600"></span>
@@ -168,7 +168,7 @@ export default function OrderPage() {
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         {data.data.uiOrderStatusSubTitle
                           ? data.data.uiOrderStatusSubTitle
-                          : STATUS[data.data.status].info}
+                          : (STATUS as any)[data.data.status].info}
                       </p>
                     </div>
                   </>
@@ -191,11 +191,14 @@ export default function OrderPage() {
                     <div className="flex w-full space-x-2 ">
                       <p className="text-base font-medium">
                         File status:{" "}
-                        {FILE_STATUS[data.data.files[idx].status].parsed}
+                        {
+                          (FILE_STATUS as any)[data.data.files[idx].status]
+                            .parsed
+                        }
                       </p>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {FILE_STATUS[data.data.files[idx].status].info(
+                      {(FILE_STATUS as any)[data.data.files[idx].status].info(
                         data.data.files[idx].name
                       )}
                     </p>

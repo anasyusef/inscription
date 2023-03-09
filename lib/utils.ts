@@ -7,15 +7,36 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export enum Status {
+  PAYMENT_PENDING = "payment_pending",
+  PAYMENT_RECEIVED_UNCONFIRMED = "payment_received_unconfirmed",
+  PAYMENT_RECEIVED_CONFIRMED = "payment_received_confirmed",
+  PAYMENT_UNDERPAID = "payment_underpaid",
+  PAYMENT_OVERPAID = "payment_overpaid",
+  PAYMENT_OVERPAID_CONFIRMED = "payment_overpaid_confirmed",
+  BROADCASTED = "broadcasted",
+  BROADCASTED_CONFIRMED = "broadcasted_confirmed",
+  INSCRIPTION_SENT = "inscription_sent",
+  INSCRIPTION_SENT_CONFIRMED = "inscription_sent_confirmed",
+}
+
+export const ORDER_PENDING = [
+  Status.PAYMENT_PENDING,
+  Status.PAYMENT_UNDERPAID,
+  Status.PAYMENT_OVERPAID,
+  Status.PAYMENT_RECEIVED_UNCONFIRMED,
+]
+
 export const calculateFees = (fileSize: number, priorityFee: number) => {
   const inscriptionValue = 10_000
-  const baseFee = +process.env.NEXT_PUBLIC_BASE_FEE * 100_000_000
+  const baseFee = +(process.env.NEXT_PUBLIC_BASE_FEE || 0) * 100_000_000
   const segwitFileSize = fileSize / 4
   const networkFees =
-    (segwitFileSize + +process.env.NEXT_PUBLIC_BASE_NETWORK_FEE) * priorityFee +
+    (segwitFileSize + +(process.env.NEXT_PUBLIC_BASE_NETWORK_FEE || 0)) *
+      priorityFee +
     inscriptionValue
   const serviceFees =
-    (networkFees + inscriptionValue) * +process.env.NEXT_PUBLIC_PCT_FEE +
+    (networkFees + inscriptionValue) * +(process.env.NEXT_PUBLIC_PCT_FEE || 0) +
     baseFee
 
   return {

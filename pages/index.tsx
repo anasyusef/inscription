@@ -140,7 +140,7 @@ export default function IndexPage() {
       await Promise.all(uploadPromises)
       router.push(`/orders/${orderId}`)
       store.clear()
-    } catch (e) {
+    } catch (e: any) {
       const msg = e.response.data.message
       if (typeof msg === "string") {
         setError(e.response.data.message)

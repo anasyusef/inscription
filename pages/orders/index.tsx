@@ -1,3 +1,4 @@
+import Head from "next/head"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useAuthStore } from "@/store"
@@ -10,7 +11,6 @@ import { GetOrders } from "@/types/api"
 import { STATUS, parseDate, parseFileSize } from "@/lib/utils"
 import { Layout } from "@/components/layout"
 import { Button } from "@/components/ui/button"
-import Head from "next/head"
 
 export default function OrdersPage() {
   const store = useAuthStore()
@@ -80,7 +80,9 @@ export default function OrdersPage() {
                         ))}
                       </div>
                       <div className="mt-4 text-xs font-semibold uppercase">
-                        {order.uiOrderStatusTitle ? order.uiOrderStatusTitle : STATUS[order.status].parsed}
+                        {order.uiOrderStatusTitle
+                          ? order.uiOrderStatusTitle
+                          : (STATUS as any)[order.status].parsed}
                       </div>
                       <p className="text-sm">{parseDate(order.created_at)}</p>
                       <Button

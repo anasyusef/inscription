@@ -52,7 +52,7 @@ const getEstimateTime = (value: number, fees: Fees) => {
     return "<15 minutes"
   }
 
-  return estimateTxSpeed[fast]
+  return (estimateTxSpeed as any)[fast]
 }
 
 export default function TransactionSpeed() {
@@ -157,7 +157,7 @@ export default function TransactionSpeed() {
           <DropdownMenuContent className="flex- flex w-[200px] justify-between">
             <DropdownMenuRadioGroup
               className="w-full"
-              onValueChange={handleValueChange}
+              onValueChange={(val) => handleValueChange(val as SelectedTxSpeed)}
               value={store.txSpeed}
             >
               <DropdownMenuRadioItem className="justify-between" value="slow">
@@ -258,7 +258,7 @@ export default function TransactionSpeed() {
             </div>
             {error && <Label className="text-red-500">{error}</Label>}
             <div>
-              {isFetched && !error && (
+              {isFetched && !error && data && (
                 <p className="text-center text-sm md:text-base">
                   Estimated time:{" "}
                   <span className="font-semibold">

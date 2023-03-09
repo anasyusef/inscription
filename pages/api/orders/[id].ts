@@ -24,7 +24,7 @@ export default async function handler(
     let parsedSchema: z.infer<typeof schema>
     try {
       parsedSchema = schema.parse(req.query)
-    } catch (e) {
+    } catch (e: any) {
       return res.status(400).json({ message: e.issues })
     }
     const { id: orderId, uid } = parsedSchema
@@ -62,6 +62,9 @@ export default async function handler(
           .from("orders")
           .getPublicUrl(`${uid}/${orderId}/${file.id}`).data.publicUrl
       })
+    } else {
+      console.log(result)
+      return res.status(500).json({ message: "Something unexpected happened" })
     }
 
     const fileStatuses = result.files.map((item) => item.status)
