@@ -24,7 +24,7 @@ export default async function handler(
     let parsedSchema: z.infer<typeof schema>
     try {
       parsedSchema = schema.parse(req.query)
-    } catch (e) {
+    } catch (e: any) {
       return res.status(400).json({ message: e.issues })
     }
     const { uid } = parsedSchema
@@ -70,7 +70,7 @@ export default async function handler(
   let parsedSchema: z.infer<(typeof schemas)["Orders"]["post"]>
   try {
     parsedSchema = schemas["Orders"]["post"].parse(req.body)
-  } catch (e) {
+  } catch (e: any) {
     return res.status(400).json({ message: e.issues })
   }
 

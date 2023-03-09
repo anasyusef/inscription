@@ -17,14 +17,15 @@ export default async function handler(
   const { data } = await supabase
     .from("order")
     .select("id,assigned_taproot_address,payable_amount")
-    .or("status.eq.payment_pending,status.eq.payment_below_payable_amount").limit(10)
+    .or("status.eq.payment_pending,status.eq.payment_below_payable_amount")
+    .limit(10)
 
-  if (data.length < 1) {
+  if (data && data.length < 1) {
     return res.json({ message: "ok" })
   }
 
   console.log(data)
-  const assignedAddresses = data.map((item) => item.assigned_taproot_address)
+  const assignedAddresses = data?.map((item) => item.assigned_taproot_address)
   const chunkAddresses = chunk(assignedAddresses, 150)
   const promises = chunkAddresses.map((item) =>
     axios.get(`https://blockchain.info/balance?active=${item.join("|")}`)
@@ -43,7 +44,6 @@ export default async function handler(
   // data.forEach((item) => {
   //   if (mergedData.)
   // })
-
 
   // console.log(Object.keys(mergedData).length)
   // return res.json({ mergedData })
