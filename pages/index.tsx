@@ -226,10 +226,12 @@ export default function IndexPage() {
                 className="w-full md:w-1/2"
                 type="submit"
                 variant="default"
-                disabled={!isFormValid || loading}
+                disabled
+                // disabled={!isFormValid || loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit & Pay
+                Service unavailable
+                {/* Submit & Pay */}
               </Button>
 
               {error && <p className="text-red-500">{error}</p>}
