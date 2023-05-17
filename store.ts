@@ -2,10 +2,14 @@ import { v4 as uuidv4 } from "uuid"
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
 
-import { SelectedTxSpeed } from "./types"
+import { InputAsset, SelectedTxSpeed } from "./types"
 
 interface BearState {
   files: File[]
+  type: InputAsset
+  setType: (val: InputAsset) => void
+  text: string
+  setText: (val: string) => void
   setFiles: (v: File[]) => void
   priorityFee: number
   txSpeed: SelectedTxSpeed
@@ -14,12 +18,18 @@ interface BearState {
   setRecipientAddress: (v: string) => void
   setPriorityFee: (v: number) => void
   clear: () => void
+  isInputAssetValid: () => boolean
+  getInputAsset: () => File[] | string
 }
 
 export const useStore = create<BearState>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       priorityFee: 0,
+      setText: (v) => set(() => ({ text: v })),
+      text: "",
+      type: "file",
+      setType: (v) => set(() => ({ type: v })),
       setPriorityFee: (v) => set(() => ({ priorityFee: v })),
       txSpeed: "normal",
       setTxSpeed: (v) => set(() => ({ txSpeed: v })),
@@ -28,6 +38,12 @@ export const useStore = create<BearState>()(
       recipientAddress: "",
       setRecipientAddress: (v) => set(() => ({ recipientAddress: v })),
       clear: () => set(() => ({ recipientAddress: "", files: [] })),
+      isInputAssetValid: () => {
+        const isTextInputValid = get().type === "text" && get().text !== ""
+        const isFileInputValid = get().type === "file" && get().files.length > 0
+        return isFileInputValid || isTextInputValid
+      },
+      getInputAsset: () => (get().type === "file" ? get().files : get().text),
     }),
     {
       name: "main-store",

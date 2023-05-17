@@ -1,4 +1,5 @@
 import { useStore } from "@/store"
+import { InputAsset } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { sum } from "lodash"
@@ -84,14 +85,40 @@ export const TransactionCost = () => {
     e.preventDefault()
   }
 
-  if (!store.files.length) return null
-  const fees = calculateFees(store.files[0].size, store.priorityFee)
-  const fileFees = store.files.map((file) =>
-    calculateFees(file.size, store.priorityFee)
+  const getFees = (type: InputAsset, data: File[] | string) => {
+    let totalFees = 0
+    let totalNetworkFees = 0
+    let totalServiceFees = 0
+    if (type === "file" && Array.isArray(data)) {
+      const fileFees = data.map((file) =>
+        calculateFees(file.size, store.priorityFee)
+      )
+      totalNetworkFees = sum(fileFees.map((item) => item.networkFees))
+      totalServiceFees = sum(fileFees.map((item) => item.serviceFees))
+      totalFees = sum(fileFees.map((item) => item.totalFees))
+    } else {
+      const textFees = calculateFees(
+        store.text.length * 2,
+        store.priorityFee,
+      )
+      totalNetworkFees = textFees.networkFees
+      totalServiceFees = textFees.serviceFees
+      totalFees = textFees.totalFees
+    }
+    return {
+      totalNetworkFees,
+      totalServiceFees,
+      totalFees,
+    }
+  }
+
+  const { totalFees, totalNetworkFees, totalServiceFees } = getFees(
+    store.type,
+    store.getInputAsset()
   )
-  const totalNetworkFees = sum(fileFees.map((item) => item.networkFees))
-  const totalServiceFees = sum(fileFees.map((item) => item.serviceFees))
-  const totalFees = sum(fileFees.map((item) => item.totalFees))
+
+  if (!store.isInputAssetValid()) return null
+
   return (
     <>
       <div className="grid grid-cols-3 grid-rows-2 items-center gap-x-4 gap-y-1 text-right sm:gap-y-0">
@@ -101,7 +128,8 @@ export const TransactionCost = () => {
           </TooltipTrigger>
           <TooltipContent className="max-w-sm text-center">
             <p>
-              This is the fee that the Bitcoin network takes + the sats required to send to inscribe an asset, which is 10,000. It&apos;s
+              This is the fee that the Bitcoin network takes + the sats required
+              to send to inscribe an asset, which is 10,000. It&apos;s
               calculated based on the size of the file
             </p>
           </TooltipContent>
@@ -122,7 +150,9 @@ export const TransactionCost = () => {
             <div className="flex cursor-default items-center space-x-4">
               <GridTitle
               //  className="line-through"
-               >Service fee </GridTitle>
+              >
+                Service fee{" "}
+              </GridTitle>
               {/* <div
                 style={{
                   background:
@@ -135,8 +165,8 @@ export const TransactionCost = () => {
             </div>
           </TooltipTrigger>
           <TooltipContent
-          className="max-w-sm text-center"
-          // className="pointer-events-none"
+            className="max-w-sm text-center"
+            // className="pointer-events-none"
           >
             <p>
               This is our fee to keep our services up & running, which is 10% of
@@ -147,7 +177,7 @@ export const TransactionCost = () => {
 
         <GridContent
         //  className="line-through"
-         >
+        >
           {totalServiceFees} <span className="text-xs sm:text-sm">sats</span>
         </GridContent>
 

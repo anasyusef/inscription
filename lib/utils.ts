@@ -1,3 +1,4 @@
+import { InputAsset } from "@/types"
 import { getAddressInfo } from "bitcoin-address-validation"
 import { ClassValue, clsx } from "clsx"
 import { format, parseISO } from "date-fns"
@@ -27,10 +28,13 @@ export const ORDER_PENDING = [
   Status.PAYMENT_RECEIVED_UNCONFIRMED,
 ]
 
-export const calculateFees = (fileSize: number, priorityFee: number) => {
+export const calculateFees = (
+  size: number,
+  priorityFee: number,
+) => {
   const inscriptionValue = 10_000
   const baseFee = +(process.env.NEXT_PUBLIC_BASE_FEE || 0) * 100_000_000
-  const segwitFileSize = fileSize / 4
+  const segwitFileSize = size / 4
   const networkFees =
     (segwitFileSize + +(process.env.NEXT_PUBLIC_BASE_NETWORK_FEE || 0)) *
       priorityFee +

@@ -9,13 +9,21 @@ export default async function handler(
     res.status(405).json({ message: "Method not allowed" })
   }
 
-  const {
-    data: { address },
-  } = await axios.get(`${process.env.NEXT_BACKEND_URL}/wallet`, {
-    headers: {
-      Authorization: `Bearer ${process.env.NEXT_SECRET_BACKEND_API_KEY}`,
-    },
-  })
-
-  res.status(200).json({ address })
+  try {
+    const {
+      data: { address },
+    } = await axios.get(`${process.env.BACKEND_URL}/wallet`, {
+      headers: {
+        Authorization: `Bearer ${process.env.SECRET_BACKEND_API_KEY}`,
+      },
+    })
+    return res.status(200).json({ address })
+  } catch (e) {
+    if (axios.isAxiosError(e)) {
+      console.log(e.response?.data)
+    } else {
+      console.log(e)
+    }
+    return res.status(500).json({ message: "Internal server error" })
+  }
 }

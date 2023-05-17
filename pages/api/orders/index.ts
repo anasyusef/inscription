@@ -83,6 +83,7 @@ export default async function handler(
     assignedAddress,
     mimeType,
     fileSize,
+    type,
     uid,
     ref,
   } = parsedSchema
@@ -91,8 +92,6 @@ export default async function handler(
     fileSize,
     priorityFee
   )
-
-  console.log({ networkFees, serviceFees, totalFees, ref })
 
   try {
     const order = await prisma.order.upsert({

@@ -137,7 +137,7 @@ export default function TransactionSpeed() {
     custom: "Custom ⚙️",
   }
 
-  const isDisabled = !store.files.length
+  const isDisabled = !store.isInputAssetValid()
 
   return (
     <>

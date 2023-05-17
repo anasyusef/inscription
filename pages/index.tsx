@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { schemas } from "@/schemas"
 import { useAuthStore, useStore } from "@/store"
-import axios from "axios"
+import axios, { AxiosResponse } from "axios"
 import clsx from "clsx"
 import { Info, Loader2 } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
@@ -12,8 +12,9 @@ import { z } from "zod"
 
 import { supabase } from "@/lib/supabaseClient"
 import { isValidTaprootAddress } from "@/lib/utils"
-import FileUpload from "@/components/file-upload"
 import { HelpDialog } from "@/components/help-dialog"
+import { InputAssets } from "@/components/input-assets"
+import FileUpload from "@/components/input-assets/file-upload"
 import { Layout } from "@/components/layout"
 import { TransactionCost } from "@/components/transaction-cost"
 import TransactionSpeed from "@/components/transaction-speed"
@@ -91,6 +92,7 @@ export default function IndexPage() {
   const store = useStore()
   const router = useRouter()
   const authStore = useAuthStore()
+  const isAssetInputValid = useStore((s) => s.isInputAssetValid())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [openHelpDialog, setOpenHelpDialog] = useState(false)
@@ -104,20 +106,39 @@ export default function IndexPage() {
       const {
         data: { address },
       } = await axios.get("/api/address")
-      const requests = files.map((file) =>
-        axios.post(`/api/orders`, {
-          priorityFee,
-          recipientAddress,
-          assignedAddress: address,
-          txSpeed,
-          uid: authStore.uid,
-          fileName: file.name,
-          fileSize: file.size,
-          orderId,
-          mimeType: file.type,
-          ref: router.query.ref || null,
-        } as z.infer<(typeof schemas)["Orders"]["post"]>)
-      )
+
+      let requests: Promise<AxiosResponse<any, any>>[] = []
+
+      if (store.type === "file") {
+        requests = files.map((file) =>
+          axios.post(`/api/orders`, {
+            priorityFee,
+            recipientAddress,
+            assignedAddress: address,
+            txSpeed,
+            uid: authStore.uid,
+            fileName: file.name,
+            fileSize: file.size,
+            orderId,
+            mimeType: file.type,
+            type: store.type,
+            ref: router.query.ref || null,
+          } as z.infer<(typeof schemas)["Orders"]["post"]>)
+        )
+      } else if (store.type === "text") {
+        requests = [
+          axios.post(`/api/orders`, {
+            priorityFee,
+            recipientAddress,
+            assignedAddress: address,
+            txSpeed,
+            uid: authStore.uid,
+            orderId,
+            type: store.type,
+            ref: router.query.ref || null,
+          } as z.infer<(typeof schemas)["Orders"]["post"]>),
+        ]
+      }
 
       const responses = await Promise.all(requests)
 
@@ -138,8 +159,8 @@ export default function IndexPage() {
       )
 
       await Promise.all(uploadPromises)
-      router.push(`/orders/${orderId}`)
-      store.clear()
+      // router.push(`/orders/${orderId}`)
+      // store.clear()
     } catch (e: any) {
       const msg = e.response.data.message
       if (typeof msg === "string") {
@@ -153,7 +174,7 @@ export default function IndexPage() {
     }
   }
 
-  const isFormValid = !!store.files.length && !!store.recipientAddress
+  const isFormValid = isAssetInputValid && !!store.recipientAddress
   return (
     <Layout>
       <HelpDialog
@@ -187,13 +208,12 @@ export default function IndexPage() {
           className="container flex flex-col items-center space-y-10 pt-6 md:py-10"
           onSubmit={handleSubmit}
         >
-          <FileUpload />
-
+          <InputAssets />
           <div className="flex w-full flex-col space-y-5 rounded-md border border-black/5 bg-gray-50 p-4 dark:border-white/5 dark:bg-gray-900 sm:w-2/3 sm:p-10">
             <div className="flex w-full justify-center">
               <RecipientInput />
             </div>
-            {!!store.files.length && (
+            {isAssetInputValid && (
               <div className="flex w-full flex-col items-center">
                 <TransactionSpeed />
               </div>

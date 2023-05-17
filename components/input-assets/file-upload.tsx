@@ -8,11 +8,11 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Key } from "ts-key-enum"
 
 import { parseFileSize } from "@/lib/utils"
-import { PreviewAsset } from "./preview-asset"
-import { PreviewItemsCard } from "./preview-items-card"
-import { Button, buttonVariants } from "./ui/button"
-import { Input } from "./ui/input"
-import { TooltipContent } from "./ui/tooltip"
+import { PreviewAsset } from "../preview-asset"
+import { PreviewItemsCard } from "../preview-items-card"
+import { Button, buttonVariants } from "../ui/button"
+import { Input } from "../ui/input"
+import { TooltipContent } from "../ui/tooltip"
 
 type Props = {}
 
@@ -74,7 +74,7 @@ export default function FileUpload({}: Props) {
             type="file"
           />
 
-          <div className="h-[250px] w-full space-y-2 sm:w-2/3">
+          <div className="h-[250px] w-full space-y-2">
             <div
               {...getRootProps()}
               className="flex h-full w-full cursor-pointer flex-col flex-wrap rounded-md border-2 border-dashed border-slate-200 text-sm hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-800"
